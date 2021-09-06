@@ -5,20 +5,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Content-Type:application/json");
     require_once("connect.php");
 
-    $sql = "SELECT * FROM members WHERE mem_username = ?";
+    $sql = "SELECT * FROM customers WHERE cus_username = ?";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$_POST['username']]);
     $row = $stmt->fetch(PDO::FETCH_OBJ);
 
     if (!empty($row)) {
-        if (password_verify($_POST['password'], $row->mem_password)) {
+        if (password_verify($_POST['password'], $row->cus_password)) {
 
             session_start();
 
             $_SESSION['USER_LOGIN'] = true;
-            $_SESSION['USER_USERNAME'] = $row->mem_username;
-            $_SESSION['USER_ROLE'] = "MEMBER";
+            $_SESSION['USER_USERNAME'] = $row->cus_username;
+            $_SESSION['USER_PROFILE'] = $row->cus_profile;
+            $_SESSION['USER_ROLE'] = "CUSTOMER";
             http_response_code(200);
             echo json_encode(['status' => 200, 'message' => 'เข้าสู่ระบบสำเร็จ']);
         } else {

@@ -6,7 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Content-Type:application/json");
     require_once("connect.php");
 
-    $sql = "SELECT * FROM members WHERE mem_username = ?";
+    $sql = "SELECT * FROM customers WHERE cus_username = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$_POST['username']]);
     $row = $stmt->fetch(PDO::FETCH_OBJ);

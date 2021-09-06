@@ -5,47 +5,56 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     header("Content-Type:application/json");
     require_once('connect.php');
 
-    if (str_contains($_POST['mem_username'], 'admin') || str_contains($_POST['mem_username'], 'owner') || str_contains($_POST['mem_username'], 'founder')) {
+    if (str_contains($_POST['cus_username'], 'admin') || str_contains($_POST['cus_username'], 'owner') || str_contains($_POST['cus_username'], 'founder')) {
         http_response_code(412);
-        echo json_encode(['status' => 412, 'message' => "ไม่สามารถใช้ชื่อ $_POST[mem_username] ได้ กรุณาเปลี่ยนใหม่"]);
+        echo json_encode(['status' => 412, 'message' => "ไม่สามารถใช้ชื่อ $_POST[cus_username] ได้ กรุณาเปลี่ยนใหม่"]);
     } else {
-        $sql = "SELECT mem_username FROM members WHERE mem_username=?";
+        $sql = "SELECT cus_username FROM customers WHERE cus_username=?";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([$_POST['mem_username']]);
+        $stmt->execute([$_POST['cus_username']]);
         $row = $stmt->fetch(PDO::FETCH_OBJ);
         if (!empty($row)) {
             http_response_code(412);
-            echo json_encode(['status' => 412, 'message' => "ชื่อผู้ใช้งาน $_POST[mem_username] ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่"]);
+            echo json_encode(['status' => 412, 'message' => "ชื่อผู้ใช้งาน $_POST[cus_username] ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่"]);
         } else {
 
             $sql = "SELECT adm_username FROM admins WHERE adm_username=?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$_POST['mem_username']]);
+            $stmt->execute([$_POST['cus_username']]);
             $row = $stmt->fetch(PDO::FETCH_OBJ);
 
             if (!empty($row)) {
                 http_response_code(412);
-                echo json_encode(['status' => 412, 'message' => "ชื่อผู้ใช้งาน $_POST[mem_username] ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่"]);
+                echo json_encode(['status' => 412, 'message' => "ชื่อผู้ใช้งาน $_POST[cus_username] ถูกใช้งานแล้ว กรุณาเปลี่ยนใหม่"]);
             } else {
-                $password = password_hash($_POST['mem_password'], PASSWORD_DEFAULT);
+                $password = password_hash($_POST['cus_password'], PASSWORD_DEFAULT);
 
-                $sql = "INSERT INTO members (mem_username,mem_password,mem_firstname,mem_lastname,mem_email,mem_address,mem_phone) VALUES (:username,:password,:firstname,:lastname,:email,:address,:phone)";
+                if($_POST['cus_gender']=='ชาย'){
+                    $profile = 'avatar_male.JPG';
+                }else{
+                    $profile = 'avatar_female.JPG';
+                }
+
+                $sql = "INSERT INTO customers (cus_username,cus_password,cus_firstname,cus_lastname,cus_gender,cus_email,cus_address,cus_phone,cus_profile) VALUES (:username,:password,:firstname,:lastname,:gender,:email,:address,:phone,:profile)";
                 $stmt = $pdo->prepare($sql);
 
                 if ($stmt->execute([
-                    'username' => $_POST['mem_username'],
+                    'username' => $_POST['cus_username'],
                     'password' => $password,
-                    'firstname' => $_POST['mem_firstname'],
-                    'lastname' => $_POST['mem_lastname'],
-                    'email' => $_POST['mem_email'],
-                    'address' => $_POST['mem_address'],
-                    'phone' => $_POST['mem_phone']
+                    'firstname' => $_POST['cus_firstname'],
+                    'lastname' => $_POST['cus_lastname'],
+                    'gender' => $_POST['cus_gender'],
+                    'email' => $_POST['cus_email'],
+                    'address' => $_POST['cus_address'],
+                    'phone' => $_POST['cus_phone'],
+                    'profile' => $profile
                 ])) {
 
                     session_start();
                     $_SESSION['USER_LOGIN'] = true;
-                    $_SESSION['USER_USERNAME'] = $_POST['mem_username'];
-                    $_SESSION['USER_ROLE'] = "MEMBER";
+                    $_SESSION['USER_USERNAME'] = $_POST['cus_username'];
+                    $_SESSION['USER_PROFILE'] = $profile;
+                    $_SESSION['USER_ROLE'] = "CUSTOMER";
 
                     http_response_code(200);
                     echo json_encode(['status' => 200, 'message' => 'สมัครสมาชิกสำเร็จ']);

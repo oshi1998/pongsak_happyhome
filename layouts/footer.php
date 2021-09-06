@@ -6,18 +6,17 @@
 
                 <div class="col-lg-4 col-md-6">
                     <div class="footer-info">
-                        <h3>Pongsak Happy Home</h3>
+                        <h3><?= $web->web_name ?></h3>
                         <p>
-                            142/2 ถนนเจ้าฟ้า ตำบลไสไทย อำเภอเมืองกระบี่ กระบี่ 81000<br>
-                            <strong>เบอร์โทร:</strong> 061 660 4587<br>
-                            <strong>อีเมล:</strong> pongsak_happyhome@gmail.com<br>
+                            <?= $web->web_address; ?><br>
+                            <strong>เบอร์โทร:</strong><?= $web->web_phone ?><br>
+                            <strong>อีเมล:</strong><?= $web->web_email ?><br>
                         </p>
                         <div class="social-links mt-3">
-                            <a href="javascript:void(0)" class="twitter"><i class="bx bxl-twitter"></i></a>
-                            <a href="javascript:void(0)" class="facebook"><i class="bx bxl-facebook"></i></a>
-                            <a href="javascript:void(0)" class="instagram"><i class="bx bxl-instagram"></i></a>
-                            <a href="javascript:void(0)" class="google-plus"><i class="bx bxl-skype"></i></a>
-                            <a href="javascript:void(0)" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+                            <a href="<?= $web->web_twitter ?>" class="twitter"><i class="bi bi-twitter"></i></a>
+                            <a href="<?= $web->web_facebook ?>" class="facebook"><i class="bi bi-facebook"></i></a>
+                            <a href="<?= $web->web_ig ?>" class="instagram"><i class="bi bi-instagram"></i></a>
+                            <a href="<?= $web->web_youtube ?>" class="youtube"><i class="bi bi-youtube"></i></i></a>
                         </div>
                     </div>
                 </div>
@@ -39,7 +38,6 @@
                     <form action="javascript:void(0)" method="post">
                         <input type="email" name="email"><input type="submit" value="เสนอแนะ">
                     </form>
-
                 </div>
 
             </div>
@@ -48,7 +46,7 @@
 
     <div class="container">
         <div class="copyright">
-            &copy; Copyright <strong><span>Pongsak Happy Home</span></strong>. All Rights Reserved
+            &copy; Copyright <strong><span><?= $web->web_name ?></span></strong>. All Rights Reserved
         </div>
     </div>
 </footer><!-- End Footer -->

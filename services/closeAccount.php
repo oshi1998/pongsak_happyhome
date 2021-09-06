@@ -5,18 +5,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     header("Content-Type:application/json");
     require_once('connect.php');
 
-    $sql = "SELECT * FROM members WHERE mem_username = ?";
+    $sql = "SELECT * FROM customers WHERE cus_username = ?";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$_POST['mem_username']]);
+    $stmt->execute([$_POST['cus_username']]);
     $row = $stmt->fetch(PDO::FETCH_OBJ);
 
     if (!empty($row)) {
-        if (password_verify($_POST['mem_password'], $row->mem_password)) {
+        if (password_verify($_POST['cus_password'], $row->cus_password)) {
             session_start();
 
-            $sql = "DELETE FROM members WHERE mem_username = ?";
+            $sql = "DELETE FROM customers WHERE cus_username = ?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$_POST['mem_username']]);
+            $stmt->execute([$_POST['cus_username']]);
             session_destroy();
 
             http_response_code(200);
