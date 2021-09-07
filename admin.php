@@ -19,15 +19,27 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
 
             $page_title = "จัดการข้อมูลผู้ดูแลระบบ";
 
-            $sql = "SELECT * FROM admins";
+            $sql = "SELECT * FROM admins ORDER BY adm_created DESC";
             $stmt = $pdo->query($sql);
             $data = $stmt->fetchAll();
         } else if (isset($_GET['customers'])) {
             $page_title = "จัดการข้อมูลลูกค้า";
 
-            $sql = "SELECT * FROM customers";
+            $sql = "SELECT * FROM customers ORDER BY cus_created DESC";
             $stmt = $pdo->query($sql);
-            $data = $stmt->fetch();
+            $data = $stmt->fetchAll();
+        } else if (isset($_GET['roomtypes'])) {
+            $page_title = "จัดการข้อมูลประเภทห้องพัก";
+
+            $sql = "SELECT * FROM roomtypes ORDER BY rt_created DESC";
+            $stmt = $pdo->query($sql);
+            $data = $stmt->fetchAll();
+        } else if (isset($_GET['rooms'])) {
+            $page_title = "จัดการข้อมูลรายชื่อห้องพัก";
+
+            $sql = "SELECT * FROM roomtypes ORDER BY rt_created DESC";
+            $stmt = $pdo->query($sql);
+            $data = $stmt->fetchAll();
         }
     }
 }
@@ -75,13 +87,30 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             <nav id="navbar" class="navbar">
                 <ul>
                     <li><a class="nav-link <?= (empty($_GET)) ? "active" : '' ?>" href="admin.php">ข้อมูลพื้นฐานเว็บไซต์</a></li>
-                    <li><a class="nav-link <?= (isset($_GET['admins'])) ? "active" : '' ?>" href="admin.php?admins">ข้อมูลผู้ดูแลระบบ</a></li>
-                    <li><a class="nav-link <?= (isset($_GET['customers'])) ? "active" : '' ?>" href="admin.php?customers">ข้อมูลลูกค้า</a></li>
+
+                    <li class="dropdown">
+                        <a role="button" class="<?= (isset($_GET['admins']) || isset($_GET['customers'])) ? "active" : '' ?>">ข้อมูลผู้ใช้งาน
+                            <i class="bi bi-chevron-down"></i>
+                        </a>
+                        <ul>
+                            <li><a class="nav-link <?= (isset($_GET['admins'])) ? "active" : '' ?>" href="admin.php?admins">ข้อมูลผู้ดูแลระบบ</a></li>
+                            <li><a class="nav-link <?= (isset($_GET['customers'])) ? "active" : '' ?>" href="admin.php?customers">ข้อมูลลูกค้า</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a role="button" class="<?= (isset($_GET['roomtypes']) || isset($_GET['rooms'])) ? "active" : '' ?>">ข้อมูลห้องพัก
+                            <i class="bi bi-chevron-down"></i>
+                        </a>
+                        <ul>
+                            <li><a class="nav-link <?= (isset($_GET['roomtypes'])) ? "active" : '' ?>" href="admin.php?roomtypes">ประเภทห้อง</a></li>
+                            <li><a class="nav-link <?= (isset($_GET['rooms'])) ? "active" : '' ?>" href="admin.php?rooms">รายชื่อห้องพัก</a></li>
+                        </ul>
+                    </li>
                     <?php if (!isset($_SESSION['USER_LOGIN'])) : ?>
                         <li><a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#loginModal">เข้าสู่ระบบ</a></li>
                         <li><a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#registerModal">สมัครสมาชิก</a></li>
                     <?php else : ?>
-                        <li class="dropdown"><a href="#"><span><?= $_SESSION['USER_USERNAME'] ?></span> <i class="bi bi-chevron-down"></i></a>
+                        <li class="dropdown"><a href="javascript:void(0)"><span><?= $_SESSION['USER_USERNAME'] ?></span> <i class="bi bi-chevron-down"></i></a>
                             <ul>
                                 <?php if ($_SESSION['USER_ROLE'] == "CUSTOMER") : ?>
                                     <li><a role="button" onclick="myAccount('<?= $_SESSION['USER_USERNAME'] ?>')">ตั้งค่าบัญชี</a></li>
@@ -122,10 +151,21 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             <?php
 
             if (empty($_GET)) {
-                require_once('website_table_form.php');
+                require_once('admin_html/website_table_form.php');
+                echo '<script src="js_function/admin_website.js"></script>';
             } else {
                 if (isset($_GET['admins'])) {
-                    require_once('admins_table_form.php');
+                    require_once('admin_html/admins_table_form.php');
+                    echo '<script src="js_function/admin_admins.js"></script>';
+                } else if (isset($_GET['customers'])) {
+                    require_once('admin_html/customers_table_form.php');
+                    echo '<script src="js_function/admin_customers.js"></script>';
+                } else if (isset($_GET['roomtypes'])) {
+                    require_once('admin_html/roomtypes_table_form.php');
+                    echo '<script src="js_function/admin_roomtypes.js"></script>';
+                } else if (isset($_GET['rooms'])) {
+                    require_once('admin_html/rooms_table_form.php');
+                    echo '<script src="js_function/admin_rooms.js"></script>';
                 }
             }
 
@@ -133,9 +173,6 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
         </section>
 
     </main><!-- End #main -->
-
-
-
 
     <?php require_once('layouts/footer.php'); ?>
 </body>

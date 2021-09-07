@@ -3,7 +3,7 @@
         <div class="col-lg-3 col-12">
             <div class="card">
                 <div class="card-header">
-                    แบบฟอร์มเพิ่มข้อมูลลูกค้า
+                    แบบฟอร์มเพิ่มข้อมูลผู้ดูแลระบบ
                 </div>
                 <div class="card-body">
                     <form id="createAdminForm">
@@ -31,46 +31,48 @@
         </div>
 
         <div class="col-lg-9 col-12">
-            <table class="table table-striped text-center" id="dataTable">
-                <thead>
-                    <tr>
-                        <th>ชื่อผู้ใช้งาน</th>
-                        <th>ชื่อจริง-นามสกุล</th>
-                        <th>แก้ไข</th>
-                        <th>เปลี่ยนรหัสผ่าน</th>
-                        <th>ลบ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($data as $row) { ?>
+            <div class="table-responsive">
+                <table class="table table-striped text-center dataTable">
+                    <thead>
                         <tr>
-                            <td><?= $row['adm_username'] ?></td>
-                            <td><?= $row['adm_firstname'] . " " . $row['adm_lastname'] ?></td>
-                            <td>
-                                <button class="btn btn-warning" onclick="editAdmin('<?= $row['adm_username'] ?>')">
-                                    แก้ไข
-                                </button>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" onclick="editPasswordAdmin('<?= $row['adm_username'] ?>')">
-                                    เปลี่ยนรหัสผ่าน
-                                </button>
-                            </td>
-                            <td>
-                                <?php if ($_SESSION['USER_USERNAME'] == $row['adm_username']) : ?>
-                                    <button class="btn btn-danger" disabled>
-                                        ไม่สามารถลบข้อมูลตัวเองได้
-                                    </button>
-                                <?php else : ?>
-                                    <button class="btn btn-danger" onclick="deleteAdmin('<?= $row['adm_username'] ?>')">
-                                        ลบ
-                                    </button>
-                                <?php endif ?>
-                            </td>
+                            <th>ชื่อผู้ใช้งาน</th>
+                            <th>ชื่อจริง-นามสกุล</th>
+                            <th>แก้ไข</th>
+                            <th>เปลี่ยนรหัสผ่าน</th>
+                            <th>ลบ</th>
                         </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($data as $row) { ?>
+                            <tr>
+                                <td><?= $row['adm_username'] ?></td>
+                                <td><?= $row['adm_firstname'] . " " . $row['adm_lastname'] ?></td>
+                                <td>
+                                    <button class="btn btn-warning" onclick="editAdmin('<?= $row['adm_username'] ?>')">
+                                        แก้ไข
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" onclick="editPasswordAdmin('<?= $row['adm_username'] ?>')">
+                                        เปลี่ยนรหัสผ่าน
+                                    </button>
+                                </td>
+                                <td>
+                                    <?php if ($_SESSION['USER_USERNAME'] == $row['adm_username']) : ?>
+                                        <button class="btn btn-danger" disabled>
+                                            ไม่สามารถลบข้อมูลตัวเองได้
+                                        </button>
+                                    <?php else : ?>
+                                        <button class="btn btn-danger" onclick="deleteAdmin('<?= $row['adm_username'] ?>')">
+                                            ลบ
+                                        </button>
+                                    <?php endif ?>
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -14,14 +14,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($row)) {
         if (password_verify($_POST['password'], $row->cus_password)) {
 
-            session_start();
+            if ($row->cus_active == 'Disable') {
+                http_response_code(401);
+                echo json_encode(['status' => 401, 'message' => "ชื่อผู้ใช้งาน $row->cus_username ถูกปิดการใช้งานชั่วคราว กรุณาติดต่อผู้ดูแลระบบ"]);
+            } else {
+                session_start();
 
-            $_SESSION['USER_LOGIN'] = true;
-            $_SESSION['USER_USERNAME'] = $row->cus_username;
-            $_SESSION['USER_PROFILE'] = $row->cus_profile;
-            $_SESSION['USER_ROLE'] = "CUSTOMER";
-            http_response_code(200);
-            echo json_encode(['status' => 200, 'message' => 'เข้าสู่ระบบสำเร็จ']);
+                $_SESSION['USER_LOGIN'] = true;
+                $_SESSION['USER_USERNAME'] = $row->cus_username;
+                $_SESSION['USER_PROFILE'] = $row->cus_profile;
+                $_SESSION['USER_ROLE'] = "CUSTOMER";
+                http_response_code(200);
+                echo json_encode(['status' => 200, 'message' => 'เข้าสู่ระบบสำเร็จ']);
+            }
         } else {
             http_response_code(401);
             echo json_encode(['status' => 401, 'message' => 'ชื่อผู้ใช้งาน หรือ รหัสผ่านไม่ถูกต้อง']);

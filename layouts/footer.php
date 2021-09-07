@@ -66,4 +66,4 @@
 <script src="assets/js/main.js"></script>
 
 <!-- Happy Home Script -->
-<script src="happy_home.js"></script>
+<script src="js_function/happy_home.js"></script>

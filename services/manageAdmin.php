@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($_POST['action'] == "insert") {
 
-        $sql = "SELECT mem_username FROM members WHERE mem_username=?";
+        $sql = "SELECT cus_username FROM customers WHERE cus_username=?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$_POST['adm_username']]);
         $row = $stmt->fetch(PDO::FETCH_OBJ);

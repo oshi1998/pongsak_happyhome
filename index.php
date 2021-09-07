@@ -337,6 +337,8 @@ $web = $stmt->fetch(PDO::FETCH_OBJ);
 
     </main><!-- End #main -->
 
+    <script src="js_function/customer_side.js"></script>
+
     <?php require_once('layouts/footer.php'); ?>
 </body>
 
