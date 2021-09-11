@@ -141,3 +141,5 @@
         </div>
     </div>
 </div>
+
+<script src="js_function/admin_admins.js"></script>

@@ -129,3 +129,5 @@
         </div>
     </div>
 </div>
+
+<script src="js_function/admin_rooms.js"></script>

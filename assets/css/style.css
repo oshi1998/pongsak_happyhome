@@ -425,13 +425,6 @@ h6 {
 /*--------------------------------------------------------------
 # Hero Section
 --------------------------------------------------------------*/
-#hero {
-  width: 100%;
-  height: calc(100vh - 110px);
-  background: url("../img/bg.jpg") top center;
-  background-size: cover;
-  position: relative;
-}
 
 #hero:before {
   content: "";

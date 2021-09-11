@@ -40,6 +40,21 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             $sql = "SELECT * FROM roomtypes ORDER BY rt_created DESC";
             $stmt = $pdo->query($sql);
             $data = $stmt->fetchAll();
+        } else if (isset($_GET['welcome_msg'])) {
+            $page_title = "ข้อความต้อนรับ";
+
+            $sql = "SELECT * FROM welcome";
+            $stmt = $pdo->query($sql);
+            $welcome = $stmt->fetch(PDO::FETCH_OBJ);
+
+        } else if (isset($_GET['aboutus'])) {
+            $page_title = "เกี่ยวกับเรา";
+
+            $sql = "SELECT * FROM aboutus";
+            $stmt = $pdo->query($sql);
+            $aboutus = $stmt->fetch(PDO::FETCH_OBJ);
+        } else if (isset($_GET['services'])) {
+            $page_title = "บริการที่พัก";
         }
     }
 }
@@ -87,7 +102,16 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             <nav id="navbar" class="navbar">
                 <ul>
                     <li><a class="nav-link <?= (empty($_GET)) ? "active" : '' ?>" href="admin.php">ข้อมูลพื้นฐานเว็บไซต์</a></li>
-
+                    <li class="dropdown">
+                        <a role="button" class="<?= (isset($_GET['welcome_msg']) || isset($_GET['aboutus'])) || isset($_GET['services']) ? "active" : '' ?>">เนื้อหาหน้าเว็บ
+                            <i class="bi bi-chevron-down"></i>
+                        </a>
+                        <ul>
+                            <li><a class="nav-link <?= (isset($_GET['welcome_msg'])) ? "active" : '' ?>" href="admin.php?welcome_msg">ข้อความต้อนรับ</a></li>
+                            <li><a class="nav-link <?= (isset($_GET['aboutus'])) ? "active" : '' ?>" href="admin.php?aboutus">เกี่ยวกับเรา</a></li>
+                            <li><a class="nav-link <?= (isset($_GET['services'])) ? "active" : '' ?>" href="admin.php?services">บริการที่พัก</a></li>
+                        </ul>
+                    </li>
                     <li class="dropdown">
                         <a role="button" class="<?= (isset($_GET['admins']) || isset($_GET['customers'])) ? "active" : '' ?>">ข้อมูลผู้ใช้งาน
                             <i class="bi bi-chevron-down"></i>
@@ -152,20 +176,21 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
 
             if (empty($_GET)) {
                 require_once('admin_html/website_table_form.php');
-                echo '<script src="js_function/admin_website.js"></script>';
             } else {
                 if (isset($_GET['admins'])) {
                     require_once('admin_html/admins_table_form.php');
-                    echo '<script src="js_function/admin_admins.js"></script>';
                 } else if (isset($_GET['customers'])) {
                     require_once('admin_html/customers_table_form.php');
-                    echo '<script src="js_function/admin_customers.js"></script>';
                 } else if (isset($_GET['roomtypes'])) {
                     require_once('admin_html/roomtypes_table_form.php');
-                    echo '<script src="js_function/admin_roomtypes.js"></script>';
                 } else if (isset($_GET['rooms'])) {
                     require_once('admin_html/rooms_table_form.php');
-                    echo '<script src="js_function/admin_rooms.js"></script>';
+                } else if (isset($_GET['welcome_msg'])) {
+                    require_once('admin_html/welcome_msg_table_form.php');
+                } else if (isset($_GET['aboutus'])) {
+                    require_once('admin_html/aboutus_table_form.php');
+                } else if (isset($_GET['services'])) {
+                    require_once('admin_html/services_table_form.php');
                 }
             }
 

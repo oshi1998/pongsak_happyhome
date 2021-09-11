@@ -79,25 +79,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } else if ($_POST['action'] == 'delete') {
 
-        $sql = "SELECT rt_image FROM roomtypes WHERE rt_id=?";
+        $sql = "SELECT r_id FROM rooms WHERE rt_id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$_POST['id']]);
-        $row = $stmt->fetch(PDO::FETCH_OBJ);
-        $rt_image = $row->rt_image;
+        $parent_row = $stmt->fetchAll();
 
-        $delete_target = "../assets/img/roomtypes/" . $rt_image;
-        unlink($delete_target);
+        if (empty($parent_row)) {
+            $sql = "DELETE FROM roomtypes WHERE rt_id = ?";
+            $stmt = $pdo->prepare($sql);
+            $result = $stmt->execute([$_POST['id']]);
 
-        $sql = "DELETE FROM roomtypes WHERE rt_id=?";
-        $stmt = $pdo->prepare($sql);
-        $result = $stmt->execute([$_POST['id']]);
+            if ($result) {
+                $sql = "SELECT rt_image FROM roomtypes WHERE rt_id=?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$_POST['id']]);
+                $row = $stmt->fetch(PDO::FETCH_OBJ);
+                $rt_image = $row->rt_image;
 
-        if ($result) {
-            http_response_code(200);
-            echo json_encode(['status' => 200, 'message' => "ลบประเภทห้องพัก $_POST[id] สำเร็จ"]);
+                $delete_target = "../assets/img/roomtypes/" . $rt_image;
+                unlink($delete_target);
+
+                http_response_code(200);
+                echo json_encode(['status' => 200, 'message' => "ลบประเภทห้องพัก $_POST[id] สำเร็จ"]);
+            } else {
+                http_response_code(412);
+                echo json_encode(['status' => 412, 'message' => "เกิดข้อผิดพลาด ไม่สามารถลบข้อมูลได้!"]);
+            }
         } else {
             http_response_code(412);
-            echo json_encode(['status' => 412, 'message' => "ไม่สามารถลบได้เนื่องจากมี รายชื่อห้องพักอยู่"]);
+            echo json_encode(['status' => 412, 'message' => "ไม่สามารถลบได้ เนื่องจากประเภทห้องพัก $_POST[id] มีรายชื่อห้องอยู่"]);
         }
     } else if ($_POST['action'] == 'getData') {
 

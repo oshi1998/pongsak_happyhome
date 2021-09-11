@@ -6,6 +6,10 @@ $sql = "SELECT * FROM website";
 $stmt = $pdo->query($sql);
 $web = $stmt->fetch(PDO::FETCH_OBJ);
 
+$sql = "SELECT * FROM welcome";
+$stmt = $pdo->query($sql);
+$welcome = $stmt->fetch(PDO::FETCH_OBJ);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +23,16 @@ $web = $stmt->fetch(PDO::FETCH_OBJ);
     <meta content="<?= $web->web_keywords ?>" name="keywords">
 
     <?php require_once('layouts/head.php'); ?>
+
+    <style>
+        #hero {
+            width: 100%;
+            height: calc(100vh - 110px);
+            background: url("assets/img/<?= $welcome->welcome_img ?>") top center;
+            background-size: cover;
+            position: relative;
+        }
+    </style>
 </head>
 
 <body>
@@ -52,7 +66,7 @@ $web = $stmt->fetch(PDO::FETCH_OBJ);
                     <li><a class="nav-link scrollto active" href="#hero">หน้าแรก</a></li>
                     <li><a class="nav-link scrollto" href="#about">เกี่ยวกับเรา</a></li>
                     <li><a class="nav-link scrollto" href="#services">บริการที่พัก</a></li>
-                    <li><a class="nav-link scrollto" href="#pricing">ค่าบริการที่พัก</a></li>
+                    <li><a class="nav-link scrollto" href="#pricing">ห้องพัก</a></li>
                     <li><a class="nav-link scrollto" href="#contact">ติดต่อเรา</a></li>
                     <?php if (!isset($_SESSION['USER_LOGIN'])) : ?>
                         <li><a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#loginModal">เข้าสู่ระบบ</a></li>
@@ -72,7 +86,6 @@ $web = $stmt->fetch(PDO::FETCH_OBJ);
                                 <?php if ($_SESSION['USER_ROLE'] == "CUSTOMER") : ?>
                                     <li><a role="button" onclick="myAccount('<?= $_SESSION['USER_USERNAME'] ?>')">ตั้งค่าบัญชี</a></li>
                                     <li><a role="button" onclick="changePassword('<?= $_SESSION['USER_USERNAME'] ?>')">เปลี่ยนรหัสผ่าน</a></li>
-                                    <li><a role="button" onclick="closeAccount('<?= $_SESSION['USER_USERNAME'] ?>')">ปิดบัญชี</a></li>
                                 <?php elseif ($_SESSION['USER_ROLE'] == "ADMIN") : ?>
                                     <li><a href="admin.php">จัดการข้อมูลหลังบ้าน</a></li>
                                 <?php endif ?>
@@ -97,7 +110,6 @@ $web = $stmt->fetch(PDO::FETCH_OBJ);
         <div class="container position-relative" data-aos="fade-up" data-aos-delay="500">
             <h1>ยินดีต้อนรับสู่ Pongsak Happy Home</h1>
             <h2>บริการที่พักราคาถูก สะอาด ปลอดภัย</h2>
-            <a href="#about" class="btn-get-started scrollto">เกี่ยวกับเรา</a>
         </div>
     </section><!-- End Hero -->
 

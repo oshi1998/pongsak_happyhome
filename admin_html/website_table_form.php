@@ -83,3 +83,5 @@
 
     </form>
 </div>
+
+<script src="js_function/admin_website.js"></script>

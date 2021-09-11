@@ -160,37 +160,6 @@
     </div>
 </div>
 
-<!-- Close Account Modal -->
-<div class="modal fade" id="closeAccountModal" tabindex="-1" aria-labelledby="closeAccountModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="closeAccountModalLabel">ลบบัญชีผู้ใช้งาน</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="closeAccountForm">
-                <div class="modal-body">
-
-                    <div class="form-group">
-                        <label for="cus_username">ชื่อผู้ใช้งาน</label>
-                        <input type="text" class="form-control" name="cus_username" id="close_username" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cus_password">รหัสผ่านของคุณ</label>
-                        <input type="password" class="form-control" name="cus_password" required>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                    <button type="submit" class="btn btn-danger">ปิดบัญชี</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- Change Password Modal -->
 <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
