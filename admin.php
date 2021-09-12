@@ -55,6 +55,10 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             $aboutus = $stmt->fetch(PDO::FETCH_OBJ);
         } else if (isset($_GET['services'])) {
             $page_title = "บริการที่พัก";
+
+            $sql = "SELECT * FROM services ORDER BY sv_no ASC";
+            $stmt = $pdo->query($sql);
+            $data = $stmt->fetchAll();
         }
     }
 }
