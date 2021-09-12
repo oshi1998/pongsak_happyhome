@@ -10,6 +10,19 @@ $sql = "SELECT * FROM welcome";
 $stmt = $pdo->query($sql);
 $welcome = $stmt->fetch(PDO::FETCH_OBJ);
 
+$sql = "SELECT * FROM aboutus";
+$stmt = $pdo->query($sql);
+$aboutus = $stmt->fetch(PDO::FETCH_OBJ);
+
+
+$sql = "SELECT * FROM services ORDER BY sv_no ASC";
+$stmt = $pdo->query($sql);
+$services = $stmt->fetchAll();
+
+$sql = "SELECT * FROM roomtypes ORDER BY rt_created ASC";
+$stmt = $pdo->query($sql);
+$roomtypes = $stmt->fetchAll();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,7 +79,7 @@ $welcome = $stmt->fetch(PDO::FETCH_OBJ);
                     <li><a class="nav-link scrollto active" href="#hero">หน้าแรก</a></li>
                     <li><a class="nav-link scrollto" href="#about">เกี่ยวกับเรา</a></li>
                     <li><a class="nav-link scrollto" href="#services">บริการที่พัก</a></li>
-                    <li><a class="nav-link scrollto" href="#pricing">ห้องพัก</a></li>
+                    <li><a class="nav-link scrollto" href="#pricing">ประเภทห้องพัก</a></li>
                     <li><a class="nav-link scrollto" href="#contact">ติดต่อเรา</a></li>
                     <?php if (!isset($_SESSION['USER_LOGIN'])) : ?>
                         <li><a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#loginModal">เข้าสู่ระบบ</a></li>
@@ -108,8 +121,8 @@ $welcome = $stmt->fetch(PDO::FETCH_OBJ);
     <!-- ======= Hero Section ======= -->
     <section id="hero" class="d-flex align-items-center">
         <div class="container position-relative" data-aos="fade-up" data-aos-delay="500">
-            <h1>ยินดีต้อนรับสู่ Pongsak Happy Home</h1>
-            <h2>บริการที่พักราคาถูก สะอาด ปลอดภัย</h2>
+            <h1><?= $welcome->welcome_head ?></h1>
+            <h2><?= $welcome->welcome_desc ?></h2>
         </div>
     </section><!-- End Hero -->
 
@@ -121,21 +134,10 @@ $welcome = $stmt->fetch(PDO::FETCH_OBJ);
 
                 <div class="row">
                     <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-left">
-                        <img src="assets/img/about/04.jpg" class="img-fluid" alt="">
+                        <img src="assets/img/<?= $aboutus->aboutus_image ?>" class="img-fluid" alt="">
                     </div>
                     <div class="col-lg-6 pt-4 pt-lg-0 order-2 order-lg-1 content" data-aos="fade-right">
-                        <h3>Pongsak Happy Home</h3>
-                        <p class="fst-italic">
-                            บริการที่พัก
-                        </p>
-                        <ul>
-                            <li><i class="bi bi-check-circle" style="color: green;"></i> ราคาถูก</li>
-                            <li><i class="bi bi-check-circle" style="color: green;"></i> สะอาด</li>
-                            <li><i class="bi bi-check-circle" style="color: green;"></i> ปลอดภัย</li>
-                        </ul>
-                        <p>
-                            รายละเอียดเกี่ยวกับบริการที่พักของเรา
-                        </p>
+                        <?= $aboutus->aboutus_content ?>
                     </div>
                 </div>
 
@@ -204,30 +206,15 @@ $welcome = $stmt->fetch(PDO::FETCH_OBJ);
                 </div>
 
                 <div class="row">
-                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up">
-                        <div class="icon-box w-100">
-                            <div class="icon"><i class='bx bxs-magic-wand'></i></div>
-                            <h4><a href="javascript:void(0)">ทำความสะอาด</a></h4>
-                            <p>มีแม่บ้านบริการทำความสะอาด ตั้งแต่เวลา 09.00 - 17.00 น.</p>
+                    <?php foreach ($services as $service) { ?>
+                        <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="fade-up">
+                            <div class="icon-box w-100">
+                                <div class="icon"><?= $service['sv_icon'] ?></div>
+                                <h4><a href="javascript:void(0)"><?= $service['sv_heading'] ?></a></h4>
+                                <p><?= $service['sv_desc'] ?></p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="fade-up" data-aos-delay="150">
-                        <div class="icon-box w-100">
-                            <div class="icon"><i class='bx bx-shield-quarter'></i></div>
-                            <h4><a href="javascript:void(0)">ดูแลรักษาความปลอดภัย</a></h4>
-                            <p>มีเจ้าหน้าที่คอยดูแลรักษาความปลอดภัยตลอด 24 ชั่วโมง</p>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="300">
-                        <div class="icon-box w-100">
-                            <div class="icon"><i class='bx bxs-parking'></i></div>
-                            <h4><a href="javascript:void(0)">ที่จอดรถ</a></h4>
-                            <p>พื้นที่จอดรถสะดวก สามารถทจอดได้ทั้งรถมอเตอร์ไซค์ และรถยนต์</p>
-                        </div>
-                    </div>
-
+                    <?php } ?>
                 </div>
 
             </div>
@@ -238,61 +225,25 @@ $welcome = $stmt->fetch(PDO::FETCH_OBJ);
             <div class="container">
 
                 <div class="section-title">
-                    <span>ค่าบริการที่พัก</span>
-                    <h2>ค่าบริการที่พัก</h2>
-                    <p>อัตราค่าบริการที่พักของเรา</p>
+                    <span>ประเภทห้องพัก</span>
+                    <h2>ประเภทห้องพัก</h2>
+                    <p>อัตราค่าบริการห้องพักของเรา</p>
                 </div>
 
                 <div class="row">
 
-                    <div class="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay="150">
-                        <div class="box">
-                            <h3>ชั่วคราว</h3>
-                            <h4>300 บาท<span> / วัน</span></h4>
-                            <ul>
-                                <li>พักได้ 2 คน</li>
-                                <li>เครื่องทำน้ำอุ่น</li>
-                                <li>เฟอร์นิเจอร์ครบ</li>
-                            </ul>
-                            <div class="btn-wrap">
-                                <a href="javascript:void(0)" class="btn-buy">จองทันที</a>
+                    <?php foreach ($roomtypes as $type) { ?>
+                        <div class="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay="150">
+                            <div class="box">
+                                <h3><?= $type['rt_name'] ?></h3>
+                                <img class="img-responsive" src="assets/img/roomtypes/<?= $type['rt_image']?>">
+                                <h4><?= $type['rt_price'] ?> บาท<span> / คืน</span></h4>
+                                <div class="btn-wrap">
+                                    <a href="javascript:void(0)" class="btn-buy">จองทันที</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6 mt-4 mt-md-0" data-aos="zoom-in">
-                        <div class="box featured">
-                            <h3>ธรรมดา</h3>
-                            <h4>3,500 บาท<span> / เดือน</span></h4>
-                            <ul>
-                                <li>พักได้ 3 คน</li>
-                                <li>เครื่องทำน้ำอุ่น</li>
-                                <li>มีพัดลม</li>
-                                <li>เฟอร์นิเจอร์ครบ</li>
-                                <li class="na">เครื่องปรับอากาศ</li>
-                            </ul>
-                            <div class="btn-wrap">
-                                <a href="#" class="btn-buy">จองทันที</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6 mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="150">
-                        <div class="box">
-                            <h3>พิเศษ</h3>
-                            <h4>4,500 บาท<span> / เดือน</span></h4>
-                            <ul>
-                                <li>พักได้ 4 คน</li>
-                                <li>เครื่องทำน้ำอุ่น</li>
-                                <li>มีพัดลม</li>
-                                <li>มีเครื่องปรับอากาศ</li>
-                                <li>เฟอร์นิเจอร์ครบ</li>
-                            </ul>
-                            <div class="btn-wrap">
-                                <a href="#" class="btn-buy">จองทันที</a>
-                            </div>
-                        </div>
-                    </div>
+                    <?php } ?>
 
                 </div>
 

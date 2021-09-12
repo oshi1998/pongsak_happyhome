@@ -1,3 +1,11 @@
+uploadAboutImg.onchange = evt => {
+    const [file] = uploadAboutImg.files
+    if (file) {
+        previewImage.src = URL.createObjectURL(file)
+    }
+}
+
+
 CKEDITOR.replace('editor', {
     extraPlugins: 'filebrowser',
     filebrowserBrowseUrl: 'browseUrl/browse_aboutus.php',
