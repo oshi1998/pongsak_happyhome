@@ -118,6 +118,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         http_response_code(200);
         echo json_encode(['status' => 200, 'message' => "โหลดข้อมูลประเภทที่พัก $_POST[id] สำเร็จ!", 'data' => $row]);
+    } else if ($_POST['action'] == 'removeImage') {
+
+        $sql = "DELETE FROM images WHERE file_name = '$_POST[file_name]'";
+        $result = $pdo->exec($sql);
+
+        if ($result > 0) {
+            $delete_target = "../assets/img/roomtypes/other/" . $_POST['file_name'];
+            unlink($delete_target);
+
+            http_response_code(200);
+            echo json_encode(['status'=>200,'message'=>"ลบรูปภาพ $_POST[file_name] สำเร็จ"]);
+        } else {
+            http_response_code(412);
+            echo json_encode(['status'=>412,'message'=>"ลบรูปภาพไม่สำเร็จ"]);
+        }
     } else {
         http_response_code(405);
     }
