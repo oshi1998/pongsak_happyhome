@@ -252,6 +252,7 @@ $roomtypes = $stmt->fetchAll();
 
         <!-- ======= Contact Section ======= -->
         <section id="contact" class="contact">
+            
             <div class="container">
 
                 <div class="section-title">

@@ -92,7 +92,7 @@
                     <input class="form-control" name="action" value="update" readonly hidden>
 
                     <div class="form-group text-center">
-                        <img id="previewUpdRtImg" width="150px" height="150px">
+                        <img id="previewUpdRtImg" class="img-responsive">
                         <br><br>
                         <input type="text" name="old_image" id="old_image" readonly hidden>
                         <input type="file" class="form-control" name="rt_image" id="updRtImg" accept="image/*">

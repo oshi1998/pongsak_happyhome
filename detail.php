@@ -23,7 +23,6 @@ if (isset($_GET['id'])) {
     $sql = "UPDATE roomtypes SET rt_view = rt_view+1 WHERE rt_id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$_GET['id']]);
-
 } else {
     header('location:index.php');
 }
@@ -40,6 +39,21 @@ if (isset($_GET['id'])) {
     <meta content="<?= $web->web_keywords ?>" name="keywords">
 
     <?php require_once('layouts/head.php'); ?>
+
+
+    <style>
+        .preview-main-img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+
+        .preview-other-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
@@ -96,16 +110,72 @@ if (isset($_GET['id'])) {
         </section><!-- End Breadcrumbs -->
 
         <section class="inner-page">
-            <?php
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7 col-12" data-aos="fade-left">
+                        <a role="button" onclick="viewImageMain('<?= $room->rt_image ?>')">
+                            <img class="preview-main-img" src="assets/img/roomtypes/<?= $room->rt_image ?>">
+                        </a>
+                    </div>
 
+                    <div class="col-lg-5 col-12" data-aos="fade-right">
 
+                        <div class="card">
+                            <div class="card-header">
+                                ห้องพักแบบ <?= $room->rt_name ?>
+                            </div>
+                            <div class="card-body">
+                                <?= $room->rt_content ?>
+                            </div>
+                            <div class="card-footer">
+                                ราคาที่พัก : <?= $room->rt_price . " บาท/คืน" ?>
+                            </div>
+                        </div>
 
-            ?>
+                        <br>
+                        <a href="javascript:void(0)" class="btn btn-outline-success">สนใจจองที่พัก</a>
+
+                        <hr>
+                        <?php if (!empty($images)) : ?>
+                            <strong>รูปภาพเพิ่มเติม</strong>
+                            <div class="row">
+                                <?php foreach ($images as $image) { ?>
+                                    <div class="col-lg-4 col-3" data-aos="zoom-in" data-aos-delay="150">
+                                        <a role="button" onclick="viewImageOther('<?= $image['file_name'] ?>')">
+                                            <div class="box">
+                                                <img class="preview-other-img" src="assets/img/roomtypes/other/<?= $image['file_name'] ?>">
+                                            </div>
+                                        </a>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        <?php endif ?>
+                    </div>
+                </div>
+            </div>
         </section>
+
+
+        <!-- Zoom Image Modal -->
+        <div class="modal fade" id="zoomImageModal" tabindex="-1" aria-labelledby="zoomImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="showFullImage">
+
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </main><!-- End #main -->
 
     <?php require_once('layouts/footer.php'); ?>
+
+
+    <script src="js_function/detail_page.js"></script>
 </body>
 
 </html>
