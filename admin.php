@@ -99,7 +99,7 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
     <header id="header" class="d-flex align-items-center">
         <div class="container d-flex align-items-center justify-content-between">
 
-            <h1 class="logo"><a href="index.php"><?= $web->web_name ?></a></h1>
+            <h1 class="logo"><a href="admin.php">ระบบจัดการข้อมูลหลังบ้าน</a></h1>
             <!-- Uncomment below if you prefer to use an image logo -->
             <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
 
@@ -157,11 +157,6 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
 
         </div>
     </header><!-- End Header -->
-
-
-    <!-- Include My Modal -->
-    <?php include('layouts/myModal.php'); ?>
-    <!-- End Include My Modal -->
 
     <main id="main">
         <!-- ======= Breadcrumbs ======= -->

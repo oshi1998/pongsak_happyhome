@@ -79,7 +79,7 @@ $roomtypes = $stmt->fetchAll();
                     <li><a class="nav-link scrollto active" href="#hero">หน้าแรก</a></li>
                     <li><a class="nav-link scrollto" href="#about">เกี่ยวกับเรา</a></li>
                     <li><a class="nav-link scrollto" href="#services">บริการที่พัก</a></li>
-                    <li><a class="nav-link scrollto" href="#pricing">ประเภทห้องพัก</a></li>
+                    <li><a class="nav-link scrollto" href="#pricing">จองที่พัก</a></li>
                     <li><a class="nav-link scrollto" href="#contact">ติดต่อเรา</a></li>
                     <?php if (!isset($_SESSION['USER_LOGIN'])) : ?>
                         <li><a class="nav-link" role="button" data-bs-toggle="modal" data-bs-target="#loginModal">เข้าสู่ระบบ</a></li>
@@ -97,6 +97,7 @@ $roomtypes = $stmt->fetchAll();
                             </a>
                             <ul>
                                 <?php if ($_SESSION['USER_ROLE'] == "CUSTOMER") : ?>
+                                    <li><a href="#">รายการจองของฉัน</a></li>
                                     <li><a role="button" onclick="myAccount('<?= $_SESSION['USER_USERNAME'] ?>')">ตั้งค่าบัญชี</a></li>
                                     <li><a role="button" onclick="changePassword('<?= $_SESSION['USER_USERNAME'] ?>')">เปลี่ยนรหัสผ่าน</a></li>
                                 <?php elseif ($_SESSION['USER_ROLE'] == "ADMIN") : ?>

@@ -92,11 +92,6 @@ if (isset($_GET['id'])) {
         </div>
     </header><!-- End Header -->
 
-
-    <!-- Include My Modal -->
-    <?php include('layouts/myModal.php'); ?>
-    <!-- End Include My Modal -->
-
     <main id="main">
         <!-- ======= Breadcrumbs ======= -->
         <section id="breadcrumbs" class="breadcrumbs">
@@ -133,7 +128,7 @@ if (isset($_GET['id'])) {
                         </div>
 
                         <br>
-                        <a href="javascript:void(0)" class="btn btn-outline-success">สนใจจองที่พัก</a>
+                        <a href="book.php" class="btn btn-outline-success">สนใจจองที่พัก</a>
 
                         <hr>
                         <?php if (!empty($images)) : ?>
