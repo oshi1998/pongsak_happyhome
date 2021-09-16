@@ -13,11 +13,29 @@ if (isset($_SESSION['USER_LOGIN'])) {
     if (isset($_GET['step'])) {
 
         if ($_GET['step'] == 2) {
-
             if (!empty($_SESSION['MYBOOK'])) {
                 $sql = "SELECT * FROM roomtypes";
                 $stmt = $pdo->query($sql);
                 $roomtypes = $stmt->fetchAll();
+            } else {
+                header('location:book.php');
+            }
+        } else if ($_GET['step'] == 3) {
+
+            if (!empty($_SESSION['MYBOOK'])) {
+                if (empty($_SESSION['MYBOOK']['room'])) {
+                    $_SESSION['error'] = "ขออภัย ท่านยังไม่ได้ทำการเลือกห้องพัก สำหรับการจอง";
+                    header('location:book.php?step=2');
+                }
+            } else {
+                header('location:book.php');
+            }
+            
+        } else if ($_GET['step'] == 4) {
+            if (!empty($_SESSION['MYBOOK'])) {
+                if(!isset($_SESSION['book_success'])){
+                    header('location:book.php');
+                }
             } else {
                 header('location:book.php');
             }
@@ -129,14 +147,16 @@ if (isset($_SESSION['USER_LOGIN'])) {
 
             <nav id="navbar" class="navbar">
                 <ul>
-                    <li>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#myBookModal" class="btn btn-info position-relative">
-                            รายการจอง
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                <?= count($_SESSION['MYBOOK']['room']) ?>
-                            </span>
-                        </button>
-                    </li>
+                    <?php if (isset($_GET['step'])) : ?>
+                        <li>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#myBookModal" class="btn btn-info position-relative">
+                                รายการจอง
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    <?= count($_SESSION['MYBOOK']['room']) ?>
+                                </span>
+                            </button>
+                        </li>
+                    <?php endif ?>
                     <li><a href="index.php" class="nav-link">กลับไปหน้าแรก</a></li>
                 </ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
@@ -168,9 +188,9 @@ if (isset($_SESSION['USER_LOGIN'])) {
 
                 <ul class="progressbar" data-aos="zoom-in">
                     <li class="active">เช็คอิน - เช็คเอาท์</li>
-                    <li class="<?= (isset($_GET['step']) == 2) ? 'active' : '' ?>">เลือกห้องพัก</li>
-                    <li>ตรวจสอบ</li>
-                    <li>เสร็จสิ้น</li>
+                    <li class="<?= (isset($_GET['step']) && $_GET['step'] == 2 || isset($_GET['step']) && $_GET['step'] == 3 || isset($_GET['step']) && $_GET['step'] == 4) ? 'active' : '' ?>">เลือกห้องพัก</li>
+                    <li class="<?= (isset($_GET['step']) && $_GET['step'] == 3 || isset($_GET['step']) && $_GET['step'] == 4) ? 'active' : '' ?>">ตรวจสอบ</li>
+                    <li class="<?= (isset($_GET['step']) && $_GET['step'] == 4) ? 'active' : '' ?>">เสร็จสิ้น</li>
                 </ul>
 
                 <br><br><br>
@@ -219,7 +239,7 @@ if (isset($_SESSION['USER_LOGIN'])) {
                         </div>
                     </div>
                 <?php else : ?>
-                    <?php if (isset($_GET['step']) == 2) : ?>
+                    <?php if ($_GET['step'] == 2) : ?>
 
                         <div class="text-center" data-aos="fade-down">
                             <h1>ระบบแสดงเฉพาะ ห้องพักที่พร้อมบริการ ในช่วงเวลาเช็คอิน - เช็คเอาท์ ของท่าน</h1>
@@ -249,6 +269,7 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                 <?php $i = 0; ?>
 
                                 <div class="tab-content" id="myTabContent">
+
                                     <?php foreach ($roomtypes as $row) { ?>
 
                                         <?php
@@ -274,6 +295,16 @@ if (isset($_SESSION['USER_LOGIN'])) {
 
                                         <div class="tab-pane fade <?= ($i == 0) ? 'show active' : '' ?>" id="<?= $row['rt_name'] ?>" role="tabpanel" aria-labelledby="<?= $row['rt_name'] . "-tab" ?>">
                                             <br><br>
+
+                                            <?php if (isset($_SESSION['error'])) : ?>
+                                                <div class="alert alert-danger">
+                                                    <?= $_SESSION['error'] ?>
+                                                    <?php unset($_SESSION['error']) ?>
+                                                </div>
+                                            <?php endif ?>
+
+
+
                                             <?php if (!empty($rooms)) : ?>
                                                 <div class="row">
                                                     <?php foreach ($rooms as $room) { ?>
@@ -309,10 +340,90 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                 </div>
                             </div>
                         </div>
+
                         <br>
                         <div class="justify-content-between text-end">
                             <a href="book.php" class="btn btn-info">ย้อนกลับ</a>
                             <a href="book.php?step=3" class="btn btn-success">ต่อไป</a>
+                        </div>
+                    <?php elseif ($_GET['step'] == 3) : ?>
+                        <div class="card" data-aos="fade-up">
+                            <div class="card-header">
+                                ขั้นที่ 3 ตรวจสอบข้อมูลการขอจองที่พัก
+                            </div>
+                            <div class="card-body">
+                                <div class="table table-responsive">
+
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th>ประเภท</th>
+                                                <th>เลขห้อง</th>
+                                                <th>ราคา/คืน</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($_SESSION['MYBOOK']['room'] as $keys => $value) { ?>
+                                                <tr>
+                                                    <td><?= $value['type'] ?></td>
+                                                    <td><?= $keys ?></td>
+                                                    <td><?= $value['price'] ?></td>
+                                                </tr>
+                                            <?php } ?>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>รวม</th>
+                                                <td><?= count($_SESSION['MYBOOK']['room']) . " (ห้อง)" ?></td>
+                                                <td><?= $_SESSION['MYBOOK']['cost'] . " (บาท)" ?></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+
+                                    <table class="table table-condensed">
+                                        <tr>
+                                            <th>ผู้ทำการจอง</th>
+                                            <td><?= $_SESSION['USER_USERNAME'] . " (" . $_SESSION['USER_NAME'] . ")" ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>ช่วงเวลา</th>
+                                            <td><?= $_SESSION['MYBOOK']['daterange'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>ระยะเวลา</th>
+                                            <td><?= $_SESSION['MYBOOK']['duration'] . " คืน" ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>กำหนดการเช็คอิน</th>
+                                            <td><?= $_SESSION['MYBOOK']['checkin'] . " เวลา " . $_SESSION['MYBOOK']['time'] . " น." ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>กำหนดการเช็คเอาท์</th>
+                                            <td><?= $_SESSION['MYBOOK']['checkout'] . " เวลา " . $_SESSION['MYBOOK']['time'] . " น." ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>รวมค่าที่พักทั้งหมด</th>
+                                            <td><?= number_format($_SESSION['MYBOOK']['cost'] * $_SESSION['MYBOOK']['duration'], 2) ?></td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="justify-content-between text-end">
+                                    <a href="book.php?step=2" class="btn btn-info">ย้อนกลับ</a>
+                                    <a role="button" class="btn btn-success" onclick="booking()">ดำเนินการจอง</a>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    <?php elseif ($_GET['step'] == 4) : ?>
+                        <div class="alert alert-success">
+                            <?= $_SESSION['book_success']; ?>
+                            <br>
+                            ท่านสามารถติดตามสถานะการขอจองที่พักของท่านได้ที่ <a href="mybooking.php">รายการจองของฉัน</a>
+                        </div>
+                        <div class="text-center">
+                            <a href="index.php" class="btn btn-danger">กลับหน้าแรก</a>
                         </div>
                     <?php endif ?>
 
@@ -336,7 +447,7 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                         <tr>
                                             <th>ประเภท</th>
                                             <th>เลขห้อง</th>
-                                            <th>ราคา</th>
+                                            <th>ราคา/คืน</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -348,6 +459,13 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                             </tr>
                                         <?php } ?>
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>รวม</th>
+                                            <td><?= count($_SESSION['MYBOOK']['room']) . " (ห้อง)" ?></td>
+                                            <td><?= $_SESSION['MYBOOK']['cost'] . " (บาท)" ?></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
 

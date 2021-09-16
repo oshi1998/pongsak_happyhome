@@ -97,7 +97,7 @@ $roomtypes = $stmt->fetchAll();
                             </a>
                             <ul>
                                 <?php if ($_SESSION['USER_ROLE'] == "CUSTOMER") : ?>
-                                    <li><a href="#">รายการจองของฉัน</a></li>
+                                    <li><a href="mybooking.php">รายการจองของฉัน</a></li>
                                     <li><a role="button" onclick="myAccount('<?= $_SESSION['USER_USERNAME'] ?>')">ตั้งค่าบัญชี</a></li>
                                     <li><a role="button" onclick="changePassword('<?= $_SESSION['USER_USERNAME'] ?>')">เปลี่ยนรหัสผ่าน</a></li>
                                 <?php elseif ($_SESSION['USER_ROLE'] == "ADMIN") : ?>

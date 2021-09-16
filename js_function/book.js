@@ -23,6 +23,43 @@ function addBook(id) {
     });
 }
 
+function booking() {
+    swal({
+        title: "โปรดยืนยันการดำเนินการจอง?",
+        text: "หากยืนยันไปแล้ว จะไม่สามารถย้อนกลับมาแก้ไขได้",
+        icon: "info",
+        buttons: true,
+    }).then((willBooking) => {
+
+        if (willBooking) {
+
+            $.ajax({
+                method: "post",
+                url: "services/book.php",
+                data: {
+                    "action": "booking"
+                }
+            }).done(function (res) {
+                console.log(res);
+                swal({
+                    title: "สำเร็จ!",
+                    text: res.message,
+                    icon: "success",
+                }).then(() => {
+                    window.location = 'book.php?step=4';
+                });
+            }).fail(function (res) {
+                console.log(res);
+                swal({
+                    title: "ล้มเหลว!",
+                    text: res.responseJSON['message'],
+                    icon: "error",
+                });
+            });
+        }
+    });
+}
+
 
 
 $(function () {

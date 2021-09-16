@@ -1,0 +1,171 @@
+<?php
+
+session_start();
+
+if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
+    require_once('services/connect.php');
+
+    if (isset($_SESSION['book_success'])) {
+        unset($_SESSION['book_success']);
+    }
+
+    $sql = "SELECT * FROM website";
+    $stmt = $pdo->query($sql);
+    $web = $stmt->fetch(PDO::FETCH_OBJ);
+
+    $sql = "SELECT * FROM customers WHERE cus_username = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$_SESSION['USER_USERNAME']]);
+    $info = $stmt->fetch(PDO::FETCH_OBJ);
+
+    $sql = "SELECT * FROM book WHERE b_cus_username = ? ORDER BY b_date DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$_SESSION['USER_USERNAME']]);
+    $books = $stmt->fetchAll();
+} else {
+    header('location:index.php');
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>รายการจองของฉัน | <?= $web->web_name ?></title>
+    <meta content="<?= $web->web_description ?>" name="description">
+    <meta content="<?= $web->web_keywords ?>" name="keywords">
+
+    <?php require_once('layouts/head.php'); ?>
+</head>
+
+<body>
+
+    <!-- ======= Top Bar ======= -->
+    <section id="topbar" class="d-flex align-items-center">
+        <div class="container d-flex justify-content-center justify-content-md-between">
+            <div class="contact-info d-flex align-items-center">
+                <i class="bi bi-envelope-fill"></i><a href="mailto:<?= $web->web_email ?>"><?= $web->web_email ?></a>
+                <i class="bi bi-phone-fill phone-icon"></i><?= $web->web_phone ?>
+            </div>
+            <div class="social-links d-none d-md-block">
+                <a href="<?= $web->web_twitter ?>" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="<?= $web->web_facebook ?>" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="<?= $web->web_ig ?>" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="<?= $web->web_youtube ?>" class="youtube"><i class="bi bi-youtube"></i></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="d-flex align-items-center">
+        <div class="container d-flex align-items-center justify-content-between">
+
+            <h1 class="logo"><a href="index.php"><?= $web->web_name ?></a></h1>
+            <!-- Uncomment below if you prefer to use an image logo -->
+            <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+            <nav id="navbar" class="navbar">
+                <ul>
+                    <li><a href="index.php" class="nav-link">กลับไปหน้าแรก</a></li>
+                </ul>
+                <i class="bi bi-list mobile-nav-toggle"></i>
+            </nav><!-- .navbar -->
+
+        </div>
+    </header><!-- End Header -->
+
+    <main id="main">
+        <!-- ======= Breadcrumbs ======= -->
+        <section id="breadcrumbs" class="breadcrumbs">
+            <div class="container">
+                <ol>
+                    <li><a href="index.php">หน้าแรก</a></li>
+                    <li>รายการจองของฉัน</li>
+                </ol>
+                <h2>รายการจองของฉัน</h2>
+            </div>
+        </section><!-- End Breadcrumbs -->
+
+        <section class="inner-page">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-12" data-aos="fade-right">
+                        <div class="card">
+                            <div class="card-header">
+                                ข้อมูลผู้ใช้งาน
+                            </div>
+                            <div class="card-body">
+
+                                <div class="text-center">
+                                    <img class="rounded-circle" width="100px" height="100px" src="assets/img/customers/<?= $_SESSION['USER_PROFILE'] ?>">
+                                </div>
+
+                                <br>
+                                <table class="table table-bordered text-center">
+                                    <tr>
+                                        <td><i class="bx bx-user"></i></td>
+                                        <td><?= $_SESSION['USER_NAME'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="<?= ($info->cus_gender == 'ชาย') ? 'bx bx-male-sign' : 'bx bx-female-sign' ?>"></i></td>
+                                        <td><?= $info->cus_gender ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="bi bi-envelope-fill"></i></td>
+                                        <td><?= $info->cus_email ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="bx bx-map"></i></td>
+                                        <td><?= $info->cus_address ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="bx bx-phone"></i></td>
+                                        <td><?= $info->cus_phone ?></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-12" data-aos="fade-left">
+                        <div class="table-responsive">
+                            <table class="table table-striped text-center dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>วันที่</th>
+                                        <th>หมายเลขจอง</th>
+                                        <th>เช็คอิน-เช็คเอาท์</th>
+                                        <th>หมายเหตุ</th>
+                                        <th>สถานะ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($books as $book) { ?>
+                                        <tr>
+                                            <td><?= $book['b_date'] ?></td>
+                                            <td>
+                                                <button class="btn btn-outline-info"><?= $book['b_id'] ?></button>
+                                            </td>
+                                            <td><?= $book['b_daterange'] ?></td>
+                                            <td><?= $book['b_note'] ?></td>
+                                            <td>
+                                                <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main><!-- End #main -->
+
+    <?php require_once('layouts/footer.php'); ?>
+
+</body>
+
+</html>

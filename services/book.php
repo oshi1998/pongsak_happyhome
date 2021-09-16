@@ -61,6 +61,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             http_response_code(412);
             echo json_encode(['status' => 412, 'message' => 'ไม่สามารถจองห้องพักได้ คุณต้องทำการเลือกช่วงเวลา เช็คอิน-เช็คเอาท์ ก่อน!']);
         }
+    } else if ($_POST['action'] == 'booking') {
+        $b_id = "b-" . substr(uniqid(), 0, 6);
+
+        $sql = "INSERT INTO book (b_id,b_cus_username,b_daterange,b_duration,b_check_in,b_check_out,b_time,b_qty,b_cost,b_status)
+        VALUES (:b_id,:cus_username,:daterange,:duration,:checkin,:checkout,:time,:qty,:cost,:status)";
+        $stmt = $pdo->prepare($sql);
+        $result = $stmt->execute([
+            'b_id' => $b_id,
+            'cus_username' => $_SESSION['USER_USERNAME'],
+            'daterange' => $_SESSION['MYBOOK']['daterange'],
+            'duration' => $_SESSION['MYBOOK']['duration'],
+            'checkin' => $_SESSION['MYBOOK']['checkin'],
+            'checkout' => $_SESSION['MYBOOK']['checkout'],
+            'time' => $_SESSION['MYBOOK']['time'],
+            'qty' => count($_SESSION['MYBOOK']['room']),
+            'cost' => number_format($_SESSION['MYBOOK']['cost'] * $_SESSION['MYBOOK']['duration'], 2),
+            'status' => 'รอตรวจสอบ'
+        ]);
+
+        if ($result) {
+
+            $count_query = 0;
+
+            foreach ($_SESSION['MYBOOK']['room'] as $keys => $value) {
+                $sql = "INSERT INTO book_detail (bd_b_id,bd_r_id) VALUES (:b_id,:r_id)";
+                $stmt = $pdo->prepare($sql);
+                $result = $stmt->execute([
+                    'b_id' => $b_id,
+                    'r_id' => $keys
+                ]);
+
+                if ($result) {
+                    $count_query += 1;
+                }
+            }
+
+            if ($count_query == count($_SESSION['MYBOOK']['room'])) {
+                unset($_SESSION['MYBOOK']);
+                $_SESSION['book_success'] = "การดำเนินการขอจองที่พักสำเร็จ หมายเลขของท่าน คือ $b_id ขณะนี้อยู่ระหว่างรอการตรวจสอบ";
+                http_response_code(200);
+                echo json_encode(['status'=>200,'message'=>"ดำเนินการขอจองที่พักสำเร็จ"]);
+            } else {
+
+                $sql = "DELETE FROM book WHERE b_id = '$b_id'";
+                $response = $pdo->exec($sql);
+
+                http_response_code(412);
+                echo json_encode(['status' => 412, 'message' => 'เกิดข้อผิดพลาด ไม่สามารถส่งคำร้องขอจองได้ กรุณาลองใหม่อีกครั้ง!']);
+            }
+        } else {
+            http_response_code(412);
+            echo json_encode(['status' => 412, 'message' => 'เกิดข้อผิดพลาด ไม่สามารถส่งคำร้องขอจองได้ กรุณาลองใหม่อีกครั้ง!']);
+        }
     }
 } else {
     http_response_code(405);

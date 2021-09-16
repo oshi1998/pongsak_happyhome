@@ -22,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $_SESSION['USER_LOGIN'] = true;
                 $_SESSION['USER_USERNAME'] = $row->cus_username;
+                $_SESSION['USER_NAME'] = $row->cus_firstname." ".$row->cus_lastname;
                 $_SESSION['USER_PROFILE'] = $row->cus_profile;
                 $_SESSION['USER_ROLE'] = "CUSTOMER";
                 http_response_code(200);
@@ -46,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $_SESSION['USER_LOGIN'] = true;
                 $_SESSION['USER_USERNAME'] = $row->adm_username;
+                $_SESSION['USER_NAME'] = $row->adm_firstname." ".$row->adm_lastname;
                 $_SESSION['USER_ROLE'] = "ADMIN";
                 http_response_code(200);
                 echo json_encode(['status' => 200, 'message' => 'เข้าสู่ระบบสำเร็จ']);
