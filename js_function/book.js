@@ -23,6 +23,31 @@ function addBook(id) {
     });
 }
 
+function removeBook(id) {
+    $.ajax({
+        method: "post",
+        url: "services/book.php",
+        data: {
+            "r_id": id,
+            "action": "removeBook"
+        }
+    }).done(function (res) {
+        swal({
+            title: "สำเร็จ!",
+            text: res.message,
+            icon: "success",
+        }).then(() => {
+            window.location.reload();
+        });
+    }).fail(function (res) {
+        swal({
+            title: "ล้มเหลว!",
+            text: res.responseJSON['message'],
+            icon: "error",
+        });
+    });
+}
+
 function booking() {
     swal({
         title: "โปรดยืนยันการดำเนินการจอง?",
@@ -59,7 +84,6 @@ function booking() {
         }
     });
 }
-
 
 
 $(function () {

@@ -30,13 +30,8 @@ if (isset($_SESSION['USER_LOGIN'])) {
             } else {
                 header('location:book.php');
             }
-            
         } else if ($_GET['step'] == 4) {
-            if (!empty($_SESSION['MYBOOK'])) {
-                if(!isset($_SESSION['book_success'])){
-                    header('location:book.php');
-                }
-            } else {
+            if (!isset($_SESSION['book_success']) || empty($_SESSION['book_success'])) {
                 header('location:book.php');
             }
         }
@@ -149,12 +144,14 @@ if (isset($_SESSION['USER_LOGIN'])) {
                 <ul>
                     <?php if (isset($_GET['step'])) : ?>
                         <li>
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#myBookModal" class="btn btn-info position-relative">
-                                รายการจอง
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    <?= count($_SESSION['MYBOOK']['room']) ?>
-                                </span>
-                            </button>
+                            <?php if (!empty($_SESSION['MYBOOK'])) : ?>
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#myBookModal" class="btn btn-info position-relative">
+                                    รายการจอง
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        <?= count($_SESSION['MYBOOK']['room']) ?>
+                                    </span>
+                                </button>
+                            <?php endif ?>
                         </li>
                     <?php endif ?>
                     <li><a href="index.php" class="nav-link">กลับไปหน้าแรก</a></li>
@@ -318,9 +315,14 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                                                         ราคา <?= $room['rt_price'] . " บาท/คืน" ?>
                                                                     </label>
                                                                     <?php if (isset($_SESSION['MYBOOK']['room'][$room['r_id']])) : ?>
-                                                                        <button type="button" class="btn btn-success" disabled>
-                                                                            <i class='bx bx-book-add'></i>
-                                                                        </button>
+                                                                        <div>
+                                                                            <button type="button" class="btn btn-danger" onclick="removeBook('<?= $room['r_id'] ?>')">
+                                                                                <i class='bx bxs-minus-square'></i>
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-success" disabled>
+                                                                                <i class='bx bx-book-add'></i>
+                                                                            </button>
+                                                                        </div>
                                                                     <?php else : ?>
                                                                         <button type="button" class="btn btn-outline-success" onclick="addBook('<?= $room['r_id'] ?>')">
                                                                             <i class='bx bx-book-add'></i>
@@ -375,7 +377,7 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                             <tr>
                                                 <th>รวม</th>
                                                 <td><?= count($_SESSION['MYBOOK']['room']) . " (ห้อง)" ?></td>
-                                                <td><?= $_SESSION['MYBOOK']['cost'] . " (บาท)" ?></td>
+                                                <td><?= number_format($_SESSION['MYBOOK']['cost'],2) . " (บาท)" ?></td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -403,7 +405,7 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                         </tr>
                                         <tr>
                                             <th>รวมค่าที่พักทั้งหมด</th>
-                                            <td><?= number_format($_SESSION['MYBOOK']['cost'] * $_SESSION['MYBOOK']['duration'], 2) ?></td>
+                                            <td><?= number_format($_SESSION['MYBOOK']['cost'] * $_SESSION['MYBOOK']['duration'],2) ?></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -463,7 +465,7 @@ if (isset($_SESSION['USER_LOGIN'])) {
                                         <tr>
                                             <th>รวม</th>
                                             <td><?= count($_SESSION['MYBOOK']['room']) . " (ห้อง)" ?></td>
-                                            <td><?= $_SESSION['MYBOOK']['cost'] . " (บาท)" ?></td>
+                                            <td><?= number_format($_SESSION['MYBOOK']['cost'],2) . " (บาท)" ?></td>
                                         </tr>
                                     </tfoot>
                                 </table>

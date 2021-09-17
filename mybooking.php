@@ -5,10 +5,6 @@ session_start();
 if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
     require_once('services/connect.php');
 
-    if (isset($_SESSION['book_success'])) {
-        unset($_SESSION['book_success']);
-    }
-
     $sql = "SELECT * FROM website";
     $stmt = $pdo->query($sql);
     $web = $stmt->fetch(PDO::FETCH_OBJ);
@@ -145,12 +141,29 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
                                         <tr>
                                             <td><?= $book['b_date'] ?></td>
                                             <td>
-                                                <button class="btn btn-outline-info"><?= $book['b_id'] ?></button>
+                                                <span role="button" class="badge bg-danger fs-6" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                    <?= $book['b_id'] ?>
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </span>
                                             </td>
                                             <td><?= $book['b_daterange'] ?></td>
                                             <td><?= $book['b_note'] ?></td>
                                             <td>
-                                                <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
+                                                <?php if ($book['b_status'] == 'รอตรวจสอบ') : ?>
+                                                    <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
+                                                <?php elseif ($book['b_status'] == 'รอชำระค่ามัดจำ') : ?>
+                                                    <span role="button" class="badge bg-success">ชำระค่ามัดจำ คลิก!</span>
+                                                <?php elseif ($book['b_status'] == 'รอตรวจสอบการชำระค่ามัดจำ') : ?>
+                                                    <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
+                                                <?php elseif ($book['b_status'] == 'รอเช็คอิน') : ?>
+                                                    <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
+                                                <?php elseif ($book['b_status'] == 'อยู่ระหว่างการเช็คอิน') : ?>
+                                                    <span class="badge bg-success"><?= $book['b_status'] ?></span>
+                                                <?php elseif ($book['b_status'] == 'เช็คเอาท์เรียบร้อย') : ?>
+                                                    <span class="badge bg-success"><?= $book['b_status'] ?></span>
+                                                <?php elseif ($book['b_status'] == 'ไม่อนุมัติ') : ?>
+                                                    <span class="badge bg-danger"><?= $book['b_status'] ?></span>
+                                                <?php endif ?>
                                             </td>
                                         </tr>
                                     <?php } ?>
@@ -162,10 +175,27 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
             </div>
         </section>
 
+        <!-- Book Detail Modal -->
+        <div class="modal fade" id="bookDetailModal" tabindex="-1" aria-labelledby="bookDetailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="bookDetailModalLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-body" id="showBookDetail">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main><!-- End #main -->
 
     <?php require_once('layouts/footer.php'); ?>
 
+    <script src="js_function/mybooking.js"></script>
 </body>
 
 </html>

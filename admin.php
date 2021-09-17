@@ -13,9 +13,39 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
     $web = $stmt->fetch(PDO::FETCH_OBJ);
 
     if (empty($_GET)) {
-        $page_title = "จัดการข้อมูลพื้นฐานเว็บไซต์";
+        $page_title = "แดชบอร์ด";
+
+        $sql = "SELECT * FROM book WHERE b_status='รอตรวจสอบ'";
+        $stmt = $pdo->query($sql);
+        $books_status1 = $stmt->fetchAll();
+
+        $sql = "SELECT * FROM book WHERE b_status='รอชำระค่ามัดจำ'";
+        $stmt = $pdo->query($sql);
+        $books_status2 = $stmt->fetchAll();
+
+        $sql = "SELECT * FROM book WHERE b_status='รอตรวจสอบการชำระค่ามัดจำ'";
+        $stmt = $pdo->query($sql);
+        $books_status3 = $stmt->fetchAll();
+
+        $sql = "SELECT * FROM book WHERE b_status='รอเช็คอิน'";
+        $stmt = $pdo->query($sql);
+        $books_status4 = $stmt->fetchAll();
+
+        $sql = "SELECT * FROM book WHERE b_status='อยู่ระหว่างการเช็คอิน'";
+        $stmt = $pdo->query($sql);
+        $books_status5 = $stmt->fetchAll();
+
+        $sql = "SELECT * FROM book WHERE b_status='เช็คเอาท์เรียบร้อย'";
+        $stmt = $pdo->query($sql);
+        $books_status6 = $stmt->fetchAll();
+
+        $sql = "SELECT * FROM book WHERE b_status='ไม่อนุมัติ'";
+        $stmt = $pdo->query($sql);
+        $books_status7 = $stmt->fetchAll();
     } else {
-        if (isset($_GET['admins'])) {
+        if (isset($_GET['website'])) {
+            $page_title = "จัดการข้อมูลพื้นฐานเว็บไซต์";
+        } else if (isset($_GET['admins'])) {
 
             $page_title = "จัดการข้อมูลผู้ดูแลระบบ";
 
@@ -46,7 +76,6 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             $sql = "SELECT * FROM welcome";
             $stmt = $pdo->query($sql);
             $welcome = $stmt->fetch(PDO::FETCH_OBJ);
-
         } else if (isset($_GET['aboutus'])) {
             $page_title = "เกี่ยวกับเรา";
 
@@ -105,7 +134,8 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
 
             <nav id="navbar" class="navbar">
                 <ul>
-                    <li><a class="nav-link <?= (empty($_GET)) ? "active" : '' ?>" href="admin.php">ข้อมูลพื้นฐานเว็บไซต์</a></li>
+                    <li><a class="nav-link <?= (empty($_GET)) ? "active" : '' ?>" href="admin.php">แดชบอร์ด</a></li>
+                    <li><a class="nav-link <?= (isset($_GET['website'])) ? "active" : '' ?>" href="admin.php?website">ข้อมูลพื้นฐานเว็บไซต์</a></li>
                     <li class="dropdown">
                         <a role="button" class="<?= (isset($_GET['welcome_msg']) || isset($_GET['aboutus'])) || isset($_GET['services']) ? "active" : '' ?>">เนื้อหาหน้าเว็บ
                             <i class="bi bi-chevron-down"></i>
@@ -174,7 +204,7 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             <?php
 
             if (empty($_GET)) {
-                require_once('admin_html/website_table_form.php');
+                require_once('admin_html/dashboard.php');
             } else {
                 if (isset($_GET['admins'])) {
                     require_once('admin_html/admins_table_form.php');
@@ -190,6 +220,8 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
                     require_once('admin_html/aboutus_table_form.php');
                 } else if (isset($_GET['services'])) {
                     require_once('admin_html/services_table_form.php');
+                } else if (isset($_GET['website'])) {
+                    require_once('admin_html/website_table_form.php');
                 }
             }
 

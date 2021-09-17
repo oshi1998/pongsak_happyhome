@@ -190,7 +190,8 @@ $roomtypes = $stmt->fetchAll();
                 </div>
 
             </div>
-        </section> --><!-- End Why Us Section -->
+        </section> -->
+        <!-- End Why Us Section -->
 
         <!-- ======= Clients Section ======= -->
         <section id="clients" class="clients">
@@ -237,10 +238,10 @@ $roomtypes = $stmt->fetchAll();
                         <div class="col-lg-4 col-md-6" data-aos="zoom-in" data-aos-delay="150">
                             <div class="box">
                                 <h3><?= $type['rt_name'] ?></h3>
-                                <img class="img-responsive" src="assets/img/roomtypes/<?= $type['rt_image']?>">
+                                <img class="img-responsive" src="assets/img/roomtypes/<?= $type['rt_image'] ?>">
                                 <h4><?= $type['rt_price'] ?> บาท<span> / คืน</span></h4>
                                 <div class="btn-wrap">
-                                    <a href="detail.php?id=<?= $type['rt_id']?>" class="btn-buy">รายละเอียด</a>
+                                    <a href="detail.php?id=<?= $type['rt_id'] ?>" class="btn-buy">รายละเอียด</a>
                                 </div>
                             </div>
                         </div>
@@ -253,7 +254,7 @@ $roomtypes = $stmt->fetchAll();
 
         <!-- ======= Contact Section ======= -->
         <section id="contact" class="contact">
-            
+
             <div class="container">
 
                 <div class="section-title">

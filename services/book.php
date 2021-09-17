@@ -53,13 +53,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $cost += $room['price'];
             }
 
-            $_SESSION['MYBOOK']['cost'] = number_format($cost, 2);
+            $_SESSION['MYBOOK']['cost'] = floatval($cost);
 
             http_response_code(200);
             echo json_encode(['status' => 200, 'message' => 'จองห้องพักสำเร็จ!']);
         } else {
             http_response_code(412);
             echo json_encode(['status' => 412, 'message' => 'ไม่สามารถจองห้องพักได้ คุณต้องทำการเลือกช่วงเวลา เช็คอิน-เช็คเอาท์ ก่อน!']);
+        }
+    } else if ($_POST['action'] == 'removeBook') {
+        if (isset($_SESSION['MYBOOK']['room'][$_POST['r_id']])) {
+            $cost = 0;
+
+            unset($_SESSION['MYBOOK']['room'][$_POST['r_id']]);
+
+            foreach ($_SESSION['MYBOOK']['room'] as $room) {
+                $cost += $room['price'];
+            }
+
+            $_SESSION['MYBOOK']['cost'] = number_format($cost, 2);
+
+            http_response_code(200);
+            echo json_encode(['status' => 200, 'message' => "ลบห้องหมายเลข $_POST[r_id] ออกจากรายการจองสำเร็จ"]);
+        } else {
+            http_response_code(412);
+            echo json_encode(['status' => 412, 'message' => "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"]);
         }
     } else if ($_POST['action'] == 'booking') {
         $b_id = "b-" . substr(uniqid(), 0, 6);
@@ -76,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'checkout' => $_SESSION['MYBOOK']['checkout'],
             'time' => $_SESSION['MYBOOK']['time'],
             'qty' => count($_SESSION['MYBOOK']['room']),
-            'cost' => number_format($_SESSION['MYBOOK']['cost'] * $_SESSION['MYBOOK']['duration'], 2),
+            'cost' => $_SESSION['MYBOOK']['cost'] * $_SESSION['MYBOOK']['duration'],
             'status' => 'รอตรวจสอบ'
         ]);
 
@@ -101,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 unset($_SESSION['MYBOOK']);
                 $_SESSION['book_success'] = "การดำเนินการขอจองที่พักสำเร็จ หมายเลขของท่าน คือ $b_id ขณะนี้อยู่ระหว่างรอการตรวจสอบ";
                 http_response_code(200);
-                echo json_encode(['status'=>200,'message'=>"ดำเนินการขอจองที่พักสำเร็จ"]);
+                echo json_encode(['status' => 200, 'message' => "ดำเนินการขอจองที่พักสำเร็จ"]);
             } else {
 
                 $sql = "DELETE FROM book WHERE b_id = '$b_id'";
@@ -114,6 +132,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             http_response_code(412);
             echo json_encode(['status' => 412, 'message' => 'เกิดข้อผิดพลาด ไม่สามารถส่งคำร้องขอจองได้ กรุณาลองใหม่อีกครั้ง!']);
         }
+    } else if ($_POST['action'] == 'getData') {
+        $sql = "SELECT b_id,b_cus_username,cus_firstname,cus_lastname,b_daterange,b_duration,b_check_in,b_check_out,TIME_FORMAT(b_time, '%H:%i') as b_time ,b_qty,b_cost,b_deposit_slip,b_status,b_check_in_datetime,b_check_out_datetime,b_date 
+        FROM book,customers WHERE book.b_cus_username=customers.cus_username AND b_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$_POST['b_id']]);
+        $row1 = $stmt->fetchObject();
+
+        $sql = "SELECT r_id,rt_name,rt_price FROM book_detail,rooms,roomtypes WHERE book_detail.bd_r_id=rooms.r_id AND rooms.rt_id=roomtypes.rt_id AND book_detail.bd_b_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$_POST['b_id']]);
+        $row2 = $stmt->fetchAll();
+
+        http_response_code(200);
+        echo json_encode(['status' => 200, 'message' => "โหลดข้อมูลรายละเอียดการจอง $_POST[b_id] สำเร็จ", 'book' => $row1, 'book_detail' => $row2]);
+    } else if ($_POST['action'] == 'approve') {
+
+        $sql = "UPDATE book SET b_status=:status,b_note=:note WHERE b_id=:b_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'status' => 'รอชำระค่ามัดจำ',
+            'note' => 'กรุณาชำระค่ามัดจำ 50% ก่อนถึงกำหนดการเช็คอิน มิเช่นนั้นรายการจองของท่านจะถูกยกเลิก',
+            'b_id' => $_POST['b_id']
+        ]);
+
+        http_response_code(200);
+        echo json_encode(['status' => 200, 'message' => "อนุมัติหมายเลขจอง $_POST[b_id] สำเร็จ"]);
+    } else if ($_POST['action'] == 'disApprove') {
+
+        $sql = "UPDATE book SET b_status=:status,b_note=:note WHERE b_id=:b_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'status' => 'ไม่อนุมัติ',
+            'note' => $_POST['b_note'],
+            'b_id' => $_POST['b_id']
+        ]);
+
+        http_response_code(200);
+        echo json_encode(['status' => 200, 'message' => "ไม่อนุมัติหมายเลขจอง $_POST[b_id] สำเร็จ"]);
     }
 } else {
     http_response_code(405);
