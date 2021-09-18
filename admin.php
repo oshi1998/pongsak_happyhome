@@ -88,6 +88,12 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             $sql = "SELECT * FROM services ORDER BY sv_no ASC";
             $stmt = $pdo->query($sql);
             $data = $stmt->fetchAll();
+        } else if (isset($_GET['banks'])) {
+            $page_title = "จัดการข้อมูลบัญชีธนาคาร";
+
+            $sql = "SELECT * FROM banks ORDER BY bank_created DESC";
+            $stmt = $pdo->query($sql);
+            $data = $stmt->fetchAll();
         }
     }
 }
@@ -135,6 +141,7 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
             <nav id="navbar" class="navbar">
                 <ul>
                     <li><a class="nav-link <?= (empty($_GET)) ? "active" : '' ?>" href="admin.php">แดชบอร์ด</a></li>
+                    <li><a class="nav-link <?= (isset($_GET['banks'])) ? "active" : '' ?>" href="admin.php?banks">ข้อมูลบัญชีธนาคาร</a></li>
                     <li><a class="nav-link <?= (isset($_GET['website'])) ? "active" : '' ?>" href="admin.php?website">ข้อมูลพื้นฐานเว็บไซต์</a></li>
                     <li class="dropdown">
                         <a role="button" class="<?= (isset($_GET['welcome_msg']) || isset($_GET['aboutus'])) || isset($_GET['services']) ? "active" : '' ?>">เนื้อหาหน้าเว็บ
@@ -222,6 +229,8 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
                     require_once('admin_html/services_table_form.php');
                 } else if (isset($_GET['website'])) {
                     require_once('admin_html/website_table_form.php');
+                } else if (isset($_GET['banks'])) {
+                    require_once('admin_html/banks_table_form.php');
                 }
             }
 

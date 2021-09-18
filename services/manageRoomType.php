@@ -85,16 +85,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $parent_row = $stmt->fetchAll();
 
         if (empty($parent_row)) {
+
+            $sql = "SELECT rt_image FROM roomtypes WHERE rt_id=?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$_POST['id']]);
+            $row = $stmt->fetch(PDO::FETCH_OBJ);
+            $rt_image = $row->rt_image;
+
             $sql = "DELETE FROM roomtypes WHERE rt_id = ?";
             $stmt = $pdo->prepare($sql);
             $result = $stmt->execute([$_POST['id']]);
 
             if ($result) {
-                $sql = "SELECT rt_image FROM roomtypes WHERE rt_id=?";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([$_POST['id']]);
-                $row = $stmt->fetch(PDO::FETCH_OBJ);
-                $rt_image = $row->rt_image;
 
                 $delete_target = "../assets/img/roomtypes/" . $rt_image;
                 unlink($delete_target);
@@ -128,10 +130,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unlink($delete_target);
 
             http_response_code(200);
-            echo json_encode(['status'=>200,'message'=>"ลบรูปภาพ $_POST[file_name] สำเร็จ"]);
+            echo json_encode(['status' => 200, 'message' => "ลบรูปภาพ $_POST[file_name] สำเร็จ"]);
         } else {
             http_response_code(412);
-            echo json_encode(['status'=>412,'message'=>"ลบรูปภาพไม่สำเร็จ"]);
+            echo json_encode(['status' => 412, 'message' => "ลบรูปภาพไม่สำเร็จ"]);
         }
     } else {
         http_response_code(405);
