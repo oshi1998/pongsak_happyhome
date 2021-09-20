@@ -18,6 +18,10 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$_SESSION['USER_USERNAME']]);
     $books = $stmt->fetchAll();
+
+    $sql = "SELECT * FROM banks ORDER BY bank_created DESC";
+    $stmt = $pdo->query($sql);
+    $banks = $stmt->fetchAll();
 } else {
     header('location:index.php');
 }
@@ -141,10 +145,10 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
                                         <tr>
                                             <td><?= $book['b_date'] ?></td>
                                             <td>
-                                                <span role="button" class="badge bg-danger fs-6" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
                                                     <?= $book['b_id'] ?>
                                                     <i class="bi bi-eye-fill"></i>
-                                                </span>
+                                                </button>
                                             </td>
                                             <td><?= $book['b_daterange'] ?></td>
                                             <td><?= $book['b_note'] ?></td>
@@ -152,7 +156,7 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
                                                 <?php if ($book['b_status'] == 'รอตรวจสอบ') : ?>
                                                     <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
                                                 <?php elseif ($book['b_status'] == 'รอชำระค่ามัดจำ') : ?>
-                                                    <span role="button" class="badge bg-success">ชำระค่ามัดจำ คลิก!</span>
+                                                    <button class="btn btn-outline-success" onclick="deposit('<?= $book['b_id'] ?>','<?= $book['b_cost'] ?>')">ชำระค่ามัดจำ คลิก!</button>
                                                 <?php elseif ($book['b_status'] == 'รอตรวจสอบการชำระค่ามัดจำ') : ?>
                                                     <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
                                                 <?php elseif ($book['b_status'] == 'รอเช็คอิน') : ?>
@@ -187,6 +191,95 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
                         <div class="card-body" id="showBookDetail">
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deposit Modal -->
+        <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="depositModalLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="depositForm" enctype="multipart/form-data">
+
+                        <div class="modal-body">
+
+                            <div class="card">
+                                <div class="card-header">
+                                    กรุณาเลือกธนาคาร
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped text-center">
+                                            <thead>
+                                                <tr>
+                                                    <th>ภาพ</th>
+                                                    <th>ธนาคาร</th>
+                                                    <th>เลือก</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($banks as $bank) { ?>
+                                                    <tr>
+                                                        <td>
+                                                            <img width="200px" height="200px" src="assets/img/banks/<?= $bank['bank_img'] ?>">
+                                                        </td>
+                                                        <td><?= $bank['bank_name'] ?></td>
+                                                        <td>
+                                                            <input class="form-check-input" type="radio" name="bankRadio" onclick="checkRadioBank('<?= $bank['bank_id'] ?>')">
+                                                        </td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>หมายเลขจอง</label>
+                                <input type="text" class="form-control" name="b_id" id="dep_b_id" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>ธนาคาร</label>
+                                <input type="text" class="form-control" name="bank_name" id="dep_bank_name" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>เลขบัญชี</label>
+                                <input type="text" class="form-control" name="bank_id" id="dep_bank_id" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>สาขา</label>
+                                <input type="text" class="form-control" name="bank_branch" id="dep_bank_branch" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>เจ้าของบัญชี</label>
+                                <input type="text" class="form-control" name="bank_owner" id="dep_bank_owner" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label id="deposit_cost_label"></label>
+                                <input type="text" class="form-control" id="deposit_cost" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label>แนบสลิปโอนเงิน</label>
+                                <input type="file" class="form-control" name="deposit_slip" accept="image/*" required>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">แจ้งชำระค่ามัดจำ</button>
+                        </div>
+                    </form>
+
                 </div>
             </div>
         </div>

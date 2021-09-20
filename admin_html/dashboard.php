@@ -94,16 +94,16 @@
                                     <tr>
                                         <td><?= $book['b_date'] ?></td>
                                         <td>
-                                            <span role="button" class="badge bg-danger fs-6" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
                                                 <?= $book['b_id'] ?>
                                                 <i class="bi bi-eye-fill"></i>
-                                            </span>
+                                            </button>
                                         </td>
                                         <td>
-                                            <span role="button" class="badge bg-primary fs-6" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
+                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
                                                 <?= $book['b_cus_username'] ?>
                                                 <i class="bi bi-eye-fill"></i>
-                                            </span>
+                                            </button>
                                         </td>
                                         <td><?= $book['b_daterange'] ?></td>
                                         <td>
@@ -118,8 +118,111 @@
                         </table>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="status2" role="tabpanel" aria-labelledby="status2-tab">status2</div>
-                <div class="tab-pane fade" id="status3" role="tabpanel" aria-labelledby="status3-tab">status3</div>
+                <div class="tab-pane fade" id="status2" role="tabpanel" aria-labelledby="status2-tab">
+                    <br><br>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center dataTable">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>หมายเลขจอง</th>
+                                    <th>ลูกค้า</th>
+                                    <th>เช็คอิน-เช็คเอาท์</th>
+                                    <th>กำหนดจ่าย ไม่เกิน</th>
+                                    <th>สถานะ</th>
+                                    <th>ยกเลิกรายการ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($books_status2 as $book) { ?>
+                                    <tr>
+                                        <td><?= $book['b_date'] ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                <?= $book['b_id'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
+                                                <?= $book['b_cus_username'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td><?= $book['b_daterange'] ?></td>
+                                        <td>
+                                            <span class="badge bg-danger"><?= $book['b_check_in'] ?></span>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            $now = date("Y-m-d H:i:s");
+                                            $deposit_date = $book['b_check_in'] . " " . $book['b_time'];
+                                            if ($now > $deposit_date) {
+                                                echo "<span class='badge bg-danger'>เกินกำหนดจ่าย</span>";
+                                            } else {
+                                                echo "<span class='badge bg-success'>ยังไม่เกินกำหนดจ่าย</span>";
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-danger" onclick="disApprove('<?= $book['b_id'] ?>')">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="status3" role="tabpanel" aria-labelledby="status3-tab">
+                    <br><br>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center dataTable">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>หมายเลขจอง</th>
+                                    <th>ลูกค้า</th>
+                                    <th>เช็คอิน-เช็คเอาท์</th>
+                                    <th>หลักฐาน</th>
+                                    <th>ยอมรับ</th>
+                                    <th>ยกเลิก</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($books_status3 as $book) { ?>
+                                    <tr>
+                                        <td><?= $book['b_date'] ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                <?= $book['b_id'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
+                                                <?= $book['b_cus_username'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td><?= $book['b_daterange'] ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-success" onclick="viewProof('<?= $book['b_id'] ?>')">
+                                                ตรวจสอบ
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-success" onclick="accept('<?= $book['b_id'] ?>')">ยอมรับ</button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-danger" onclick="disApprove('<?= $book['b_id'] ?>')">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <div class="tab-pane fade" id="status4" role="tabpanel" aria-labelledby="status4-tab">status4</div>
                 <div class="tab-pane fade" id="status5" role="tabpanel" aria-labelledby="status5-tab">status5</div>
                 <div class="tab-pane fade" id="status6" role="tabpanel" aria-labelledby="status6-tab">status6</div>
@@ -177,7 +280,7 @@
                             <input type="text" class="form-control" name="b_id" id="dis_app_id" readonly>
                         </div>
                         <div class="form-group">
-                            <label class="text-danger">โปรดระบุหมายเหตุ ที่ไม่อนุมัติ!</label>
+                            <label class="text-danger">โปรดระบุหมายเหตุ</label>
                             <textarea class="form-control" name="b_note" rows="10" required></textarea>
                         </div>
 
