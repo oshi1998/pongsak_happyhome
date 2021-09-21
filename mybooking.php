@@ -270,6 +270,11 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
                             </div>
 
                             <div class="form-group">
+                                <label>วันเวลาที่โอน</label>
+                                <input type="datetime-local" class="form-control" name="deposit_datetime" required>
+                            </div>
+
+                            <div class="form-group">
                                 <label>แนบสลิปโอนเงิน</label>
                                 <input type="file" class="form-control" name="deposit_slip" accept="image/*" required>
                             </div>

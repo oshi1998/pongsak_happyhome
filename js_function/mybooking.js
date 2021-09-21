@@ -77,7 +77,37 @@ function viewBookDetail(id) {
                 <td><span class="badge bg-warning text-dark">${res.book['b_status']}</span></td>
             </tr>
         </table>
-    </div> `
+    </div> `;
+
+        if (res.book['b_status'] == 'รอเช็คอิน' || res.book['b_status'] == 'อยู่ระหว่างการเช็คอิน' || res.book['b_status'] == 'เช็คเอาท์เรียบร้อย') {
+            table_html += `
+        <h1>หลักฐานการโอนค่ามัดจำ</h1>
+        <div class="d-flex justify-content-between">
+        <div class="text-center">
+            <img width="300px" height="400px" src="assets/img/slip/${res.book['b_deposit_slip']}">
+        </div>
+    <table class="table table-condensed">
+        <tr>
+            <th>ผู้แจ้งโอน</th>
+            <td>${res.book['b_cus_username'] + " (" + res.book['cus_firstname'] + " " + res.book['cus_lastname'] + ")"}</td>
+        </tr>
+        <tr>
+            <th>วันเวลาโอน</th>
+            <td>${res.book['b_deposit_datetime']}</td>
+        </tr>
+        <tr>
+            <th>โอนเข้าบัญชี</th>
+            <td>${res.book['b_bank_id'] + "-" + res.book['b_bank_owner'] + " (" + res.book['b_bank_name'] + ")"}</td>
+        </tr>
+        <tr>
+            <th>จำนวนเงิน</th>
+            <td>${(res.book['b_cost'] / 2).toFixed(2)} บาท</td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    `;
+        }
 
         $('#bookDetailModalLabel').text('หมายเลขจอง ' + id);
         $('#showBookDetail').html(table_html);
@@ -121,7 +151,7 @@ $('#depositForm').submit(function (e) {
     e.preventDefault();
 
     let fd = new FormData(this);
-    fd.append("action","deposit");
+    fd.append("action", "deposit");
 
     $.ajax({
         method: "post",

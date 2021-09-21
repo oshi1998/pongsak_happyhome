@@ -1,4 +1,33 @@
 <div class="container">
+
+    <div class="row services">
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+            <div class="icon-box w-100">
+                <div class="icon"><i class="bi bi-person"></i></div>
+                <h4><a href="javascript:void(0)">จำนวนลูกค้า</a></h4>
+                <h1><?= $stats->num_cus ?></h1>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+            <div class="icon-box w-100">
+                <div class="icon"><i class="bi bi-person-badge"></i></div>
+                <h4><a href="javascript:void(0)">จำนวนผู้ดูแลระบบ</a></h4>
+                <h1><?= $stats->num_admin ?></h1>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+            <div class="icon-box w-100">
+                <div class="icon"><i class="bx bx-money"></i></div>
+                <h4><a href="javascript:void(0)">รายได้</a></h4>
+                <h1>+<?= number_format($stats->income,2) ?></h1>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
     <div class="row">
         <h1>ข้อมูลการจอง</h1>
         <div class="col-12">
@@ -223,10 +252,177 @@
                         </table>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="status4" role="tabpanel" aria-labelledby="status4-tab">status4</div>
-                <div class="tab-pane fade" id="status5" role="tabpanel" aria-labelledby="status5-tab">status5</div>
-                <div class="tab-pane fade" id="status6" role="tabpanel" aria-labelledby="status6-tab">status6</div>
-                <div class="tab-pane fade" id="status7" role="tabpanel" aria-labelledby="status7-tab">status6</div>
+                <div class="tab-pane fade" id="status4" role="tabpanel" aria-labelledby="status4-tab">
+                    <br><br>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center dataTable">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>หมายเลขจอง</th>
+                                    <th>ลูกค้า</th>
+                                    <th>เช็คอิน-เช็คเอาท์</th>
+                                    <th>เช็คอิน</th>
+                                    <th>ยกเลิก</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($books_status4 as $book) { ?>
+                                    <tr>
+                                        <td><?= $book['b_date'] ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                <?= $book['b_id'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
+                                                <?= $book['b_cus_username'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td><?= $book['b_daterange'] ?></td>
+                                        <td>
+                                            <button class="btn btn-success" onclick="checkIn('<?= $book['b_id'] ?>')">เช็คอิน</button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-danger" onclick="disApprove('<?= $book['b_id'] ?>')">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="status5" role="tabpanel" aria-labelledby="status5-tab">
+                    <br><br>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center dataTable">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>หมายเลขจอง</th>
+                                    <th>ลูกค้า</th>
+                                    <th>เช็คอิน-เช็คเอาท์</th>
+                                    <th>เช็คเอาท์</th>
+                                    <th>ยกเลิก</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($books_status5 as $book) { ?>
+                                    <tr>
+                                        <td><?= $book['b_date'] ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                <?= $book['b_id'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
+                                                <?= $book['b_cus_username'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td><?= $book['b_daterange'] ?></td>
+                                        <td>
+                                            <button class="btn btn-secondary" onclick="checkOut('<?= $book['b_id'] ?>')">เช็คเอาท์</button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-danger" onclick="disApprove('<?= $book['b_id'] ?>')">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="status6" role="tabpanel" aria-labelledby="status6-tab">
+                    <br><br>
+                    <?php $net = 0; ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center dataTable">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>หมายเลขจอง</th>
+                                    <th>ลูกค้า</th>
+                                    <th>เช็คอิน-เช็คเอาท์</th>
+                                    <th>รายได้ (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($books_status6 as $book) { ?>
+                                    <?php $net += $book['b_cost'] ?>
+                                    <tr>
+                                        <td><?= $book['b_date'] ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                <?= $book['b_id'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
+                                                <?= $book['b_cus_username'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td><?= $book['b_daterange'] ?></td>
+                                        <td><?= number_format($book['b_cost'], 2) ?></td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <th>รวมสุทธิ</th>
+                                    <td><?= number_format($net, 2) ?></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="status7" role="tabpanel" aria-labelledby="status7-tab">
+                    <br><br>
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center dataTable">
+                            <thead>
+                                <tr>
+                                    <th>วันที่</th>
+                                    <th>หมายเลขจอง</th>
+                                    <th>ลูกค้า</th>
+                                    <th>เช็คอิน-เช็คเอาท์</th>
+                                    <th>หมายเหตุ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($books_status7 as $book) { ?>
+                                    <tr>
+                                        <td><?= $book['b_date'] ?></td>
+                                        <td>
+                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
+                                                <?= $book['b_id'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
+                                                <?= $book['b_cus_username'] ?>
+                                                <i class="bi bi-eye-fill"></i>
+                                            </button>
+                                        </td>
+                                        <td><?= $book['b_daterange'] ?></td>
+                                        <td><?= $book['b_note'] ?></td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

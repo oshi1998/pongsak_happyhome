@@ -77,7 +77,37 @@ function viewBookDetail(id) {
                 <td><span class="badge bg-warning text-dark">${res.book['b_status']}</span></td>
             </tr>
         </table>
-    </div> `
+    </div> `;
+
+        if (res.book['b_status'] == 'รอเช็คอิน' || res.book['b_status'] == 'อยู่ระหว่างการเช็คอิน' || res.book['b_status'] == 'เช็คเอาท์เรียบร้อย') {
+            table_html += `
+            <h1>หลักฐานการโอนค่ามัดจำ</h1>
+            <div class="d-flex justify-content-between">
+            <div class="text-center">
+                <img width="300px" height="400px" src="assets/img/slip/${res.book['b_deposit_slip']}">
+            </div>
+        <table class="table table-condensed">
+            <tr>
+                <th>ผู้แจ้งโอน</th>
+                <td>${res.book['b_cus_username'] + " (" + res.book['cus_firstname'] + " " + res.book['cus_lastname'] + ")"}</td>
+            </tr>
+            <tr>
+                <th>วันเวลาโอน</th>
+                <td>${res.book['b_deposit_datetime']}</td>
+            </tr>
+            <tr>
+                <th>โอนเข้าบัญชี</th>
+                <td>${res.book['b_bank_id'] + "-" + res.book['b_bank_owner'] + " (" + res.book['b_bank_name'] + ")"}</td>
+            </tr>
+            <tr>
+                <th>จำนวนเงิน</th>
+                <td>${(res.book['b_cost'] / 2).toFixed(2)} บาท</td>
+            </tr>
+        </table>
+        </div>
+        </div>
+        `;
+        }
 
         $('#bookDetailModalLabel').text('หมายเลขจอง ' + id);
         $('#showBookDetail').html(table_html);
@@ -190,13 +220,10 @@ function viewProof(id) {
     }).done(function (res) {
         console.log(res);
 
-        let table_html = `
+        table_html = `
             <div class="text-center">
                 <img width="100%" height="800px" src="assets/img/slip/${res.book['b_deposit_slip']}">
             </div>
-        `;
-
-        table_html += `
         <table class="table table-condensed">
             <tr>
                 <th>ผู้แจ้งโอน</th>
@@ -208,11 +235,11 @@ function viewProof(id) {
             </tr>
             <tr>
                 <th>โอนเข้าบัญชี</th>
-                <td>${res.book['b_bank_id']+"-"+res.book['b_bank_owner']+" ("+res.book['b_bank_name']+")"}</td>
+                <td>${res.book['b_bank_id'] + "-" + res.book['b_bank_owner'] + " (" + res.book['b_bank_name'] + ")"}</td>
             </tr>
             <tr>
                 <th>ค่ามัดจำ 50%</th>
-                <td>${(res.book['b_cost']/2).toFixed(2)} บาท</td>
+                <td>${(res.book['b_cost'] / 2).toFixed(2)} บาท</td>
             </tr>
             <tr>
                 <th>รวมค่าที่พักทั้งหมด</th>
@@ -268,6 +295,82 @@ function accept(id) {
     });
 }
 
+function checkIn(id) {
+    swal({
+        title: "โปรดยืนยันการเช็คอิน หมายเลข " + id + "?",
+        text: "หากยืนยันไปแล้ว จะไม่สามารถย้อนกลับมาแก้ไขได้",
+        icon: "info",
+        buttons: true,
+    }).then((willApprove) => {
+
+        if (willApprove) {
+
+            $.ajax({
+                method: "post",
+                url: "services/book.php",
+                data: {
+                    "b_id": id,
+                    "action": "checkIn"
+                }
+            }).done(function (res) {
+                console.log(res);
+                swal({
+                    title: "สำเร็จ!",
+                    text: res.message,
+                    icon: "success",
+                }).then(() => {
+                    window.location.reload();
+                });
+            }).fail(function (res) {
+                console.log(res);
+                swal({
+                    title: "ล้มเหลว!",
+                    text: res.responseJSON['message'],
+                    icon: "error",
+                });
+            });
+        }
+    });
+}
+
+function checkOut(id) {
+    swal({
+        title: "โปรดยืนยันการเช็คเอาท์ หมายเลข " + id + "?",
+        text: "หากยืนยันไปแล้ว จะไม่สามารถย้อนกลับมาแก้ไขได้",
+        icon: "info",
+        buttons: true,
+    }).then((willApprove) => {
+
+        if (willApprove) {
+
+            $.ajax({
+                method: "post",
+                url: "services/book.php",
+                data: {
+                    "b_id": id,
+                    "action": "checkOut"
+                }
+            }).done(function (res) {
+                console.log(res);
+                swal({
+                    title: "สำเร็จ!",
+                    text: res.message,
+                    icon: "success",
+                }).then(() => {
+                    window.location.reload();
+                });
+            }).fail(function (res) {
+                console.log(res);
+                swal({
+                    title: "ล้มเหลว!",
+                    text: res.responseJSON['message'],
+                    icon: "error",
+                });
+            });
+        }
+    });
+}
+
 
 $('#disApproveForm').submit(function (e) {
 
@@ -285,7 +388,7 @@ $('#disApproveForm').submit(function (e) {
             $.ajax({
                 method: "post",
                 url: "services/book.php",
-                data : $(this).serialize()
+                data: $(this).serialize()
             }).done(function (res) {
                 console.log(res);
                 swal({

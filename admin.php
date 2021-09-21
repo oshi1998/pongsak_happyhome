@@ -42,6 +42,10 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
         $sql = "SELECT * FROM book WHERE b_status='ไม่อนุมัติ'";
         $stmt = $pdo->query($sql);
         $books_status7 = $stmt->fetchAll();
+
+        $sql = "SELECT (SELECT count(*) FROM customers) as num_cus,(SELECT count(*) FROM admins) as num_admin,(SELECT SUM(b_cost) FROM book WHERE b_status='เช็คเอาท์เรียบร้อย') as income";
+        $stmt = $pdo->query($sql);
+        $stats = $stmt->fetchObject();
     } else {
         if (isset($_GET['website'])) {
             $page_title = "จัดการข้อมูลพื้นฐานเว็บไซต์";

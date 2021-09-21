@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(['status' => 412, 'message' => "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"]);
         }
     } else if ($_POST['action'] == 'booking') {
-        $b_id = "b-" . substr(uniqid(), 0, 6);
+        $b_id = "b-" . uniqid();
 
         $sql = "INSERT INTO book (b_id,b_cus_username,b_daterange,b_duration,b_check_in,b_check_out,b_time,b_qty,b_cost,b_status)
         VALUES (:b_id,:cus_username,:daterange,:duration,:checkin,:checkout,:time,:qty,:cost,:status)";
@@ -177,7 +177,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $save_target = "../assets/img/slip/" . $slip;
         move_uploaded_file($_FILES['deposit_slip']['tmp_name'], $save_target);
 
-        $sql = "UPDATE book SET b_bank_id=:bank_id,b_bank_name=:bank_name,b_bank_branch=:bank_branch,b_bank_owner=:bank_owner,b_deposit_slip=:slip,b_status=:status,b_note=:note WHERE b_id=:b_id";
+        $sql = "UPDATE book SET b_bank_id=:bank_id,b_bank_name=:bank_name,b_bank_branch=:bank_branch,b_bank_owner=:bank_owner,b_deposit_slip=:slip,b_deposit_datetime=:datetime,b_status=:status,b_note=:note WHERE b_id=:b_id";
         $stmt = $pdo->prepare($sql);
         $result = $stmt->execute([
             'bank_id' => $_POST['bank_id'],
@@ -185,6 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'bank_branch' => $_POST['bank_branch'],
             'bank_owner' => $_POST['bank_owner'],
             'slip' => $slip,
+            'datetime' => $_POST['deposit_datetime'],
             'status' => "รอตรวจสอบการชำระค่ามัดจำ",
             'b_id' => $_POST['b_id'],
             'note' => "รอแอดมินตรวจสอบหลักฐานการโอนเงิน"
@@ -209,6 +210,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         http_response_code(200);
         echo json_encode(['status' => 200, 'message' => "ยอมรับการโอนค่ามัดจำ เลขจอง $_POST[b_id] สำเร็จ"]);
+    } else if ($_POST['action'] == 'checkIn') {
+
+        $sql = "UPDATE book SET b_status=:status,b_note=:note WHERE b_id=:b_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'status' => 'อยู่ระหว่างการเช็คอิน',
+            'note' => '',
+            'b_id' => $_POST['b_id']
+        ]);
+
+        http_response_code(200);
+        echo json_encode(['status' => 200, 'message' => "เช็คอิน เลขจอง $_POST[b_id] สำเร็จ"]);
+    } else if ($_POST['action'] == 'checkOut') {
+        $sql = "UPDATE book SET b_status=:status,b_note=:note WHERE b_id=:b_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'status' => 'เช็คเอาท์เรียบร้อย',
+            'note' => 'ขอขอบคุณที่ไว้วางใจเรา โอกาสหน้าเชิญใหม่ ขอให้ท่านเดินทางกลับบ้านโดยสวัสดิภาพ',
+            'b_id' => $_POST['b_id']
+        ]);
+
+        http_response_code(200);
+        echo json_encode(['status' => 200, 'message' => "เช็คเอาท์ เลขจอง $_POST[b_id] สำเร็จ"]);
     }
 } else {
     http_response_code(405);
