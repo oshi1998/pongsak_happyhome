@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     session_start();
                     $_SESSION['USER_LOGIN'] = true;
                     $_SESSION['USER_USERNAME'] = $_POST['cus_username'];
+                    $_SESSION['USER_NAME'] = $_POST['cus_firstname']." ".$_POST['cus_lastname'];
                     $_SESSION['USER_PROFILE'] = $profile;
                     $_SESSION['USER_ROLE'] = "CUSTOMER";
 
