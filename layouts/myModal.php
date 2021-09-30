@@ -1,3 +1,15 @@
+<style>
+    .field-icon {
+        float: right;
+        margin-left: -25px;
+        margin-top: -25px;
+        margin-right: 10px;
+        position: relative;
+        z-index: 2;
+    }
+</style>
+
+
 <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -9,12 +21,13 @@
             <form id="loginForm">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="username">ชื่อผู้ใช้งาน</label>
-                        <input type="text" class="form-control" name="username" required>
+                        <label for="username">ชื่อผู้ใช้งาน</label> <div id="login-usr-alert"></div>
+                        <input type="text" class="form-control" name="username">
                     </div>
                     <div class="form-group">
-                        <label for="password">รหัสผ่าน</label>
-                        <input type="password" class="form-control" name="password" required>
+                        <label for="password">รหัสผ่าน</label> <div id="login-pass-alert"></div>
+                        <input type="password" class="form-control" name="password" id="password-field1">
+                        <span toggle="#password-field1" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                     </div>
 
                 </div>
@@ -40,28 +53,29 @@
                 <div class="modal-body">
 
                     <div class="form-group">
-                        <label for="cus_username">ชื่อผู้ใช้งาน</label>
-                        <input type="text" class="form-control" name="cus_username" required>
+                        <label for="cus_username">ชื่อผู้ใช้งาน</label> <div id="rg-usr-alert"></div>
+                        <input type="text" class="form-control" name="cus_username">
                     </div>
 
                     <div class="form-group">
-                        <label for="cus_password">รหัสผ่าน</label>
-                        <input type="password" class="form-control" name="cus_password" required>
+                        <label for="cus_password">รหัสผ่าน</label> <div id="rg-pass-alert"></div>
+                        <input type="password" class="form-control" name="cus_password" id="password-field2">
+                        <span toggle="#password-field2" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                     </div>
 
                     <div class="form-group">
-                        <label for="cus_firstname">ชื่อจริง</label>
-                        <input type="text" class="form-control" name="cus_firstname" required>
+                        <label for="cus_firstname">ชื่อจริง</label> <div id="rg-fname-alert"></div>
+                        <input type="text" class="form-control" name="cus_firstname">
                     </div>
 
                     <div class="form-group">
-                        <label for="cus_lastname">นามสกุล</label>
-                        <input type="text" class="form-control" name="cus_lastname" required>
+                        <label for="cus_lastname">นามสกุล</label> <div id="rg-lname-alert"></div>
+                        <input type="text" class="form-control" name="cus_lastname" >
                     </div>
 
                     <div class="form-group">
-                        <label for="cus_gender">เพศ</label>
-                        <select class="form-control" name="cus_gender" required>
+                        <label for="cus_gender">เพศ</label> <div id="rg-gender-alert"></div>
+                        <select class="form-control" name="cus_gender" >
                             <option value="" disabled selected>---- เลือกเพศ ----</option>
                             <option value="ชาย">ชาย</option>
                             <option value="หญิง">หญิง</option>
@@ -69,18 +83,18 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="cus_email">อีเมล</label>
-                        <input type="email" class="form-control" name="cus_email" required>
+                        <label for="cus_email">อีเมล</label> <div id="rg-email-alert"></div>
+                        <input type="email" class="form-control" name="cus_email" >
                     </div>
 
                     <div class="form-group">
-                        <label for="cus_address">ที่อยู่</label>
+                        <label for="cus_address">ที่อยู่</label> <div id="rg-add-alert"></div>
                         <textarea class="form-control" name="cus_address" cols="30" rows="3s"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="cus_phone">เบอร์โทร</label>
-                        <input type="text" class="form-control" name="cus_phone" pattern="\d*" minlength="10" maxlength="10" required>
+                        <label for="cus_phone">เบอร์โทร</label> <div id="rg-phone-alert"></div>
+                        <input type="text" class="form-control" name="cus_phone" pattern="\d*" minlength="10" maxlength="10">
                     </div>
 
                 </div>
@@ -178,12 +192,14 @@
 
                     <div class="form-group">
                         <label for="cus_password">รหัสผ่านเดิมของคุณ</label>
-                        <input type="password" class="form-control" name="old_password" required>
+                        <input type="password" class="form-control" name="old_password" id="password-field3" required>
+                        <span toggle="#password-field3" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="cus_password">รหัสผ่านใหม่</label>
-                        <input type="password" class="form-control" name="new_password" required>
+                        <input type="password" class="form-control" name="new_password" id="password-field4" required>
+                        <span toggle="#password-field4" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                     </div>
 
                 </div>
@@ -210,7 +226,7 @@
                     <br>
 
                     <input type="text" name="action" value="reset_password" readonly hidden>
-                    
+
                     <div class="form-group">
                         <label for="cus_username">ชื่อผู้ใช้งาน</label>
                         <input type="text" class="form-control" name="cus_username" id="c_cus_username" required>
@@ -228,7 +244,8 @@
 
                     <div class="form-group">
                         <label for="cus_password">ตั้งรหัสผ่านใหม่ของคุณ</label>
-                        <input type="password" class="form-control" name="new_password" id="c_cus_password" disabled required>
+                        <input type="password" class="form-control" name="new_password" id="c_cus_password" id="password-field5" disabled required>
+                        <span toggle="#password-field5" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                     </div>
 
                 </div>
@@ -240,3 +257,18 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+    $(".toggle-password").click(function() {
+
+        $(this).toggleClass("fa-eye fa-eye-slash");
+        var input = $($(this).attr("toggle"));
+        if (input.attr("type") == "password") {
+            input.attr("type", "text");
+        } else {
+            input.attr("type", "password");
+        }
+    });
+</script>

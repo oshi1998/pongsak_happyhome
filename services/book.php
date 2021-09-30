@@ -12,14 +12,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             unset($_SESSION['MYBOOK']);
         }
 
+        $sql = "SELECT * FROM roomtypes WHERE rt_id = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$_POST['roomtype']]);
+        $row = $stmt->fetchObject();
+
         $_SESSION['MYBOOK'] = array(
             "daterange" => $_POST['daterange'],
             "duration" => $_POST['duration'],
             "checkin" => $_POST['checkin'],
-            'checkout' => $_POST['checkout'],
+            "checkout" => $_POST['checkout'],
             "time" => $_POST['time'],
-            "room" => array(),
-            "cost" => 0,
+            "roomtype_id" => $row->rt_id,
+            "roomtype_name" => $row->rt_name,
+            "roomtype_price" => $row->rt_price,
+            "total" => $row->rt_price * intval($_POST['duration']),
         );
 
         http_response_code(200);
@@ -80,10 +87,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo json_encode(['status' => 412, 'message' => "ลบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"]);
         }
     } else if ($_POST['action'] == 'booking') {
+
         $b_id = "b-" . uniqid();
 
-        $sql = "INSERT INTO book (b_id,b_cus_username,b_daterange,b_duration,b_check_in,b_check_out,b_time,b_qty,b_cost,b_status)
-        VALUES (:b_id,:cus_username,:daterange,:duration,:checkin,:checkout,:time,:qty,:cost,:status)";
+        $sql = "INSERT INTO book (b_id,b_cus_username,b_daterange,b_duration,b_check_in,b_check_out,b_time,b_cost,b_rt_id,b_status)
+        VALUES (:b_id,:cus_username,:daterange,:duration,:checkin,:checkout,:time,:cost,:rt_id,:status)";
         $stmt = $pdo->prepare($sql);
         $result = $stmt->execute([
             'b_id' => $b_id,
@@ -93,59 +101,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'checkin' => $_SESSION['MYBOOK']['checkin'],
             'checkout' => $_SESSION['MYBOOK']['checkout'],
             'time' => $_SESSION['MYBOOK']['time'],
-            'qty' => count($_SESSION['MYBOOK']['room']),
-            'cost' => $_SESSION['MYBOOK']['cost'] * $_SESSION['MYBOOK']['duration'],
+            'cost' => $_SESSION['MYBOOK']['total'],
+            'rt_id' => $_SESSION['MYBOOK']['roomtype_id'],
             'status' => 'รอตรวจสอบ'
         ]);
 
         if ($result) {
+            unset($_SESSION['MYBOOK']);
+            $_SESSION['book_success'] = "การดำเนินการขอจองที่พักสำเร็จ หมายเลขของท่าน คือ $b_id ขณะนี้อยู่ระหว่างรอการตรวจสอบ";
 
-            $count_query = 0;
-
-            foreach ($_SESSION['MYBOOK']['room'] as $keys => $value) {
-                $sql = "INSERT INTO book_detail (bd_b_id,bd_r_id) VALUES (:b_id,:r_id)";
-                $stmt = $pdo->prepare($sql);
-                $result = $stmt->execute([
-                    'b_id' => $b_id,
-                    'r_id' => $keys
-                ]);
-
-                if ($result) {
-                    $count_query += 1;
-                }
-            }
-
-            if ($count_query == count($_SESSION['MYBOOK']['room'])) {
-                unset($_SESSION['MYBOOK']);
-                $_SESSION['book_success'] = "การดำเนินการขอจองที่พักสำเร็จ หมายเลขของท่าน คือ $b_id ขณะนี้อยู่ระหว่างรอการตรวจสอบ";
-                http_response_code(200);
-                echo json_encode(['status' => 200, 'message' => "ดำเนินการขอจองที่พักสำเร็จ"]);
-            } else {
-
-                $sql = "DELETE FROM book WHERE b_id = '$b_id'";
-                $response = $pdo->exec($sql);
-
-                http_response_code(412);
-                echo json_encode(['status' => 412, 'message' => 'เกิดข้อผิดพลาด ไม่สามารถส่งคำร้องขอจองได้ กรุณาลองใหม่อีกครั้ง!']);
-            }
+            http_response_code(200);
+            echo json_encode(['status' => 200, 'message' => "ดำเนินการขอจองที่พักสำเร็จ"]);
         } else {
             http_response_code(412);
             echo json_encode(['status' => 412, 'message' => 'เกิดข้อผิดพลาด ไม่สามารถส่งคำร้องขอจองได้ กรุณาลองใหม่อีกครั้ง!']);
         }
     } else if ($_POST['action'] == 'getData') {
-        $sql = "SELECT b_id,b_cus_username,cus_firstname,cus_lastname,b_daterange,b_duration,b_check_in,b_check_out,TIME_FORMAT(b_time, '%H:%i') as b_time ,b_qty,b_cost,b_deposit_slip,b_deposit_datetime,b_bank_id,b_bank_name,b_bank_owner,b_status,b_check_in_datetime,b_check_out_datetime,b_date 
-        FROM book,customers WHERE book.b_cus_username=customers.cus_username AND b_id = ?";
+        $sql = "SELECT b_id,b_cus_username,cus_firstname,cus_lastname,b_daterange,b_duration,b_check_in,b_check_out,TIME_FORMAT(b_time, '%H:%i') as b_time ,b_cost,rt_name,rt_price,b_r_id,b_deposit_slip,b_deposit_datetime,b_bank_id,b_bank_name,b_bank_owner,b_status,b_check_in_datetime,b_check_out_datetime,b_date 
+        FROM book,customers,roomtypes WHERE book.b_cus_username=customers.cus_username AND book.b_rt_id=roomtypes.rt_id AND b_id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$_POST['b_id']]);
         $row1 = $stmt->fetchObject();
 
-        $sql = "SELECT r_id,rt_name,rt_price FROM book_detail,rooms,roomtypes WHERE book_detail.bd_r_id=rooms.r_id AND rooms.rt_id=roomtypes.rt_id AND book_detail.bd_b_id = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$_POST['b_id']]);
-        $row2 = $stmt->fetchAll();
-
         http_response_code(200);
-        echo json_encode(['status' => 200, 'message' => "โหลดข้อมูลรายละเอียดการจอง $_POST[b_id] สำเร็จ", 'book' => $row1, 'book_detail' => $row2]);
+        echo json_encode(['status' => 200, 'message' => "โหลดข้อมูลรายละเอียดการจอง $_POST[b_id] สำเร็จ", 'book' => $row1]);
     } else if ($_POST['action'] == 'approve') {
 
         $sql = "UPDATE book SET b_status=:status,b_note=:note WHERE b_id=:b_id";
@@ -203,7 +182,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "UPDATE book SET b_status=:status,b_note=:note WHERE b_id=:b_id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            'status' => 'รอเช็คอิน',
+            'status' => 'สำเร็จ',
             'note' => 'โปรดชำระอีก 50% วันที่เช็คอิน แล้วพบกัน ขอให้ท่านเดินทางมาโดยสวัสดิภาพ',
             'b_id' => $_POST['b_id']
         ]);

@@ -9,44 +9,16 @@ function viewBookDetail(id) {
     }).done(function (res) {
         console.log(res);
 
-        let total_price = 0;
+        let your_room;
+
+        if (res.book['b_r_id'] == "" || res.book['b_r_id'] == null) {
+            your_room = "แอดมินยังไม่ได้ตรวจสอบ";
+        } else {
+            your_room = res.book['b_r_id'];
+        }
+
         let table_html = `
         <div class="table table-responsive">
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th>ประเภท</th>
-                        <th>เลขห้อง</th>
-                        <th>ราคา/คืน</th>
-                    </tr>
-                </thead>
-                <tbody id="bookDetailTB">`;
-
-        res.book_detail.forEach(element => {
-            total_price += Number(element.rt_price);
-            table_html += `
-            <tr>
-                <td>${element.rt_name}</td>
-                <td>${element.r_id}</td>
-                <td>${element.rt_price}</td>
-            </tr>
-            `
-        });
-
-        total_price = total_price.toFixed(2);
-
-        table_html += `
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>รวม</th>
-                    <td>${res.book['b_qty']} (ห้อง)</td>
-                    <td>${total_price} (บาท)</td>
-                </tr>
-            </tfoot>
-        </table>`;
-
-        table_html += `
         <table class="table table-condensed">
             <tr>
                 <th>ผู้ทำการจอง</th>
@@ -59,6 +31,18 @@ function viewBookDetail(id) {
             <tr>
                 <th>ระยะเวลา</th>
                 <td>${res.book['b_duration']} คืน</td>
+            </tr>
+            <tr>
+                <th>ประเภทห้อง</th>
+                <td>${res.book['rt_name']}</td>
+            </tr>
+            <tr>
+                <th>ราคาห้อง/คืน</th>
+                <td>${res.book['rt_price']} บาท</td>
+            </tr>
+            <tr>
+                <th>หมายเลขห้อง</th>
+                <td>${your_room}</td>
             </tr>
             <tr>
                 <th>กำหนดการเช็คอิน</th>
@@ -81,32 +65,32 @@ function viewBookDetail(id) {
 
         if (res.book['b_status'] == 'รอเช็คอิน' || res.book['b_status'] == 'อยู่ระหว่างการเช็คอิน' || res.book['b_status'] == 'เช็คเอาท์เรียบร้อย') {
             table_html += `
-            <h1>หลักฐานการโอนค่ามัดจำ</h1>
-            <div class="d-flex justify-content-between">
-            <div class="text-center">
-                <img width="300px" height="400px" src="assets/img/slip/${res.book['b_deposit_slip']}">
-            </div>
-        <table class="table table-condensed">
-            <tr>
-                <th>ผู้แจ้งโอน</th>
-                <td>${res.book['b_cus_username'] + " (" + res.book['cus_firstname'] + " " + res.book['cus_lastname'] + ")"}</td>
-            </tr>
-            <tr>
-                <th>วันเวลาโอน</th>
-                <td>${res.book['b_deposit_datetime']}</td>
-            </tr>
-            <tr>
-                <th>โอนเข้าบัญชี</th>
-                <td>${res.book['b_bank_id'] + "-" + res.book['b_bank_owner'] + " (" + res.book['b_bank_name'] + ")"}</td>
-            </tr>
-            <tr>
-                <th>จำนวนเงิน</th>
-                <td>${(res.book['b_cost'] / 2).toFixed(2)} บาท</td>
-            </tr>
-        </table>
+        <h1>หลักฐานการโอนค่ามัดจำ</h1>
+        <div class="d-flex justify-content-between">
+        <div class="text-center">
+            <img width="300px" height="400px" src="assets/img/slip/${res.book['b_deposit_slip']}">
         </div>
-        </div>
-        `;
+    <table class="table table-condensed">
+        <tr>
+            <th>ผู้แจ้งโอน</th>
+            <td>${res.book['b_cus_username'] + " (" + res.book['cus_firstname'] + " " + res.book['cus_lastname'] + ")"}</td>
+        </tr>
+        <tr>
+            <th>วันเวลาโอน</th>
+            <td>${res.book['b_deposit_datetime']}</td>
+        </tr>
+        <tr>
+            <th>โอนเข้าบัญชี</th>
+            <td>${res.book['b_bank_id'] + "-" + res.book['b_bank_owner'] + " (" + res.book['b_bank_name'] + ")"}</td>
+        </tr>
+        <tr>
+            <th>จำนวนเงิน</th>
+            <td>${(res.book['b_cost'] / 2).toFixed(2)} บาท</td>
+        </tr>
+    </table>
+    </div>
+    </div>
+    `;
         }
 
         $('#bookDetailModalLabel').text('หมายเลขจอง ' + id);
@@ -162,6 +146,81 @@ function viewCusDetail(username) {
 
     }).fail(function (res) {
         console.log(res);
+    });
+}
+
+function selectRoom(b_id,room_type, checkin, checkout) {
+    $.ajax({
+        method: "get",
+        url: "services/selectroom.php",
+        data: {
+            "rt_id": room_type,
+            "checkin": checkin,
+            "checkout": checkout
+        }
+    }).done(function (res) {
+        console.log(res);
+
+        let rooms_html = '<div class="row">';
+
+        res.data.forEach(element => {
+
+            rooms_html += `
+            <div class="col-lg-4 col-6">
+                <div class="card">
+                    <div class="card-header">
+                        ห้องหมายเลข ${element['r_id']}
+                    </div>
+                    <div class="card-body d-flex justify-content-between">
+                        <label>
+                            ราคา ${element['rt_price']} บาท/คืน
+                        </label>
+                        <button type="button" class="btn btn-outline-success" onclick="chooseThisRoom('${b_id}','${element['r_id']}')">
+                            <i class='bx bx-book-add'></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            `;
+        });
+
+        rooms_html += "</div>";
+
+        $('#roomListModalLabel').text(`รายชื่อห้องพักพร้อมบริการ ${checkin} ถึง ${checkout}`);
+        $('#showRoomList').html(rooms_html);
+        $('#roomListModal').modal('show');
+
+    }).fail(function (res) {
+        swal({
+            title: "ผิดพลาด",
+            text: res.responseJSON['message'],
+            icon: "error"
+        });
+    })
+}
+
+function chooseThisRoom(b_id,room_id){
+    $.ajax({
+        method: "post",
+        url: "services/choose_this_room.php",
+        data: {
+            "b_id": b_id,
+            "r_id": room_id
+        }
+    }).done(function(res){
+        swal({
+            title: "สำเร็จ",
+            text: res.message,
+            icon: "success"
+        }).then(()=>{
+            window.location.reload();
+        });
+    }).fail(function(res){
+        swal({
+            title: "ผิดพลาด",
+            text: res.responseJSON['message'],
+            icon: "error"
+        });
     });
 }
 

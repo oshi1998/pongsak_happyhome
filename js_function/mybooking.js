@@ -9,44 +9,16 @@ function viewBookDetail(id) {
     }).done(function (res) {
         console.log(res);
 
-        let total_price = 0;
+        let your_room;
+
+        if(res.book['b_r_id']=="" || res.book['b_r_id']==null){
+            your_room = "แอดมินยังไม่ได้ตรวจสอบ";
+        }else{
+            your_room = res.book['b_r_id'];
+        }
+
         let table_html = `
         <div class="table table-responsive">
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th>ประเภท</th>
-                        <th>เลขห้อง</th>
-                        <th>ราคา/คืน</th>
-                    </tr>
-                </thead>
-                <tbody id="bookDetailTB">`;
-
-        res.book_detail.forEach(element => {
-            total_price += Number(element.rt_price);
-            table_html += `
-            <tr>
-                <td>${element.rt_name}</td>
-                <td>${element.r_id}</td>
-                <td>${element.rt_price}</td>
-            </tr>
-            `
-        });
-
-        total_price = total_price.toFixed(2);
-
-        table_html += `
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>รวม</th>
-                    <td>${res.book['b_qty']} (ห้อง)</td>
-                    <td>${total_price} (บาท)</td>
-                </tr>
-            </tfoot>
-        </table>`;
-
-        table_html += `
         <table class="table table-condensed">
             <tr>
                 <th>ผู้ทำการจอง</th>
@@ -59,6 +31,18 @@ function viewBookDetail(id) {
             <tr>
                 <th>ระยะเวลา</th>
                 <td>${res.book['b_duration']} คืน</td>
+            </tr>
+            <tr>
+                <th>ประเภทห้อง</th>
+                <td>${res.book['rt_name']}</td>
+            </tr>
+            <tr>
+                <th>ราคาห้อง/คืน</th>
+                <td>${res.book['rt_price']} บาท</td>
+            </tr>
+            <tr>
+                <th>หมายเลขห้อง</th>
+                <td>${your_room}</td>
             </tr>
             <tr>
                 <th>กำหนดการเช็คอิน</th>
@@ -138,7 +122,6 @@ function checkRadioBank(id) {
             "action": "getData"
         },
         success: function (res) {
-            $('#dep_bank_name').val(res.data['bank_name']);
             $('#dep_bank_id').val(id);
             $('#dep_bank_branch').val(res.data['bank_branch']);
             $('#dep_bank_owner').val(res.data['bank_owner']);

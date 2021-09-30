@@ -27,23 +27,17 @@ if (!isset($_SESSION['USER_LOGIN']) || $_SESSION['USER_ROLE'] != "ADMIN") {
         $stmt = $pdo->query($sql);
         $books_status3 = $stmt->fetchAll();
 
-        $sql = "SELECT * FROM book WHERE b_status='รอเช็คอิน'";
+        $sql = "SELECT * FROM book WHERE b_status='สำเร็จ'";
         $stmt = $pdo->query($sql);
         $books_status4 = $stmt->fetchAll();
 
-        $sql = "SELECT * FROM book WHERE b_status='อยู่ระหว่างการเช็คอิน'";
+        $sql = "SELECT * FROM book WHERE b_status='ไม่อนุมัติ'";
         $stmt = $pdo->query($sql);
         $books_status5 = $stmt->fetchAll();
 
-        $sql = "SELECT * FROM book WHERE b_status='เช็คเอาท์เรียบร้อย'";
-        $stmt = $pdo->query($sql);
-        $books_status6 = $stmt->fetchAll();
+        $today = date("Y-m-d");
 
-        $sql = "SELECT * FROM book WHERE b_status='ไม่อนุมัติ'";
-        $stmt = $pdo->query($sql);
-        $books_status7 = $stmt->fetchAll();
-
-        $sql = "SELECT (SELECT count(*) FROM customers) as num_cus,(SELECT count(*) FROM admins) as num_admin,(SELECT SUM(b_cost) FROM book WHERE b_status='เช็คเอาท์เรียบร้อย') as income";
+        $sql = "SELECT (SELECT count(*) FROM book WHERE b_status='รอตรวจสอบ') as num_status1,(SELECT count(*) FROM book WHERE b_status='รอตรวจสอบการชำระค่ามัดจำ') as num_status3,(SELECT count(*) FROM rooms WHERE r_id NOT IN (SELECT b_id FROM book WHERE '$today' < b_check_out AND '$today' > b_check_in)) as num_free_room";
         $stmt = $pdo->query($sql);
         $stats = $stmt->fetchObject();
     } else {

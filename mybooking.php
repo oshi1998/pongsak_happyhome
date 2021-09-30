@@ -159,11 +159,7 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
                                                     <button class="btn btn-outline-success" onclick="deposit('<?= $book['b_id'] ?>','<?= $book['b_cost'] ?>')">ชำระค่ามัดจำ คลิก!</button>
                                                 <?php elseif ($book['b_status'] == 'รอตรวจสอบการชำระค่ามัดจำ') : ?>
                                                     <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
-                                                <?php elseif ($book['b_status'] == 'รอเช็คอิน') : ?>
-                                                    <span class="badge bg-warning text-dark"><?= $book['b_status'] ?></span>
-                                                <?php elseif ($book['b_status'] == 'อยู่ระหว่างการเช็คอิน') : ?>
-                                                    <span class="badge bg-success"><?= $book['b_status'] ?></span>
-                                                <?php elseif ($book['b_status'] == 'เช็คเอาท์เรียบร้อย') : ?>
+                                                <?php elseif ($book['b_status'] == 'สำเร็จ') : ?>
                                                     <span class="badge bg-success"><?= $book['b_status'] ?></span>
                                                 <?php elseif ($book['b_status'] == 'ไม่อนุมัติ') : ?>
                                                     <span class="badge bg-danger"><?= $book['b_status'] ?></span>
@@ -207,38 +203,6 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
 
                         <div class="modal-body">
 
-                            <div class="card">
-                                <div class="card-header">
-                                    กรุณาเลือกธนาคาร
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped text-center">
-                                            <thead>
-                                                <tr>
-                                                    <th>ภาพ</th>
-                                                    <th>ธนาคาร</th>
-                                                    <th>เลือก</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($banks as $bank) { ?>
-                                                    <tr>
-                                                        <td>
-                                                            <img width="200px" height="200px" src="assets/img/banks/<?= $bank['bank_img'] ?>">
-                                                        </td>
-                                                        <td><?= $bank['bank_name'] ?></td>
-                                                        <td>
-                                                            <input class="form-check-input" type="radio" name="bankRadio" onclick="checkRadioBank('<?= $bank['bank_id'] ?>')">
-                                                        </td>
-                                                    </tr>
-                                                <?php } ?>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="form-group">
                                 <label>หมายเลขจอง</label>
                                 <input type="text" class="form-control" name="b_id" id="dep_b_id" readonly>
@@ -246,7 +210,12 @@ if (isset($_SESSION['USER_LOGIN']) && $_SESSION['USER_ROLE'] == "CUSTOMER") {
 
                             <div class="form-group">
                                 <label>ธนาคาร</label>
-                                <input type="text" class="form-control" name="bank_name" id="dep_bank_name" readonly>
+                                <select class="form-control" name="bank_name" id="dep_bank_name" onchange="checkRadioBank(event.target.value)">
+                                        <option value="" selected disabled>--- เลือกธนาคาร ---</option>
+                                    <?php foreach ($banks as $bank) { ?>
+                                        <option value="<?= $bank['bank_id'] ?>"><?= $bank['bank_name'] ?></option>
+                                    <?php } ?>
+                                </select>
                             </div>
 
                             <div class="form-group">

@@ -71,7 +71,7 @@ function booking() {
                     text: res.message,
                     icon: "success",
                 }).then(() => {
-                    window.location = 'book.php?step=4';
+                    window.location = 'book.php?step=3';
                 });
             }).fail(function (res) {
                 console.log(res);

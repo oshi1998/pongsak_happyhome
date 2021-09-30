@@ -4,24 +4,24 @@
         <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
             <div class="icon-box w-100">
                 <div class="icon"><i class="bi bi-person"></i></div>
-                <h4><a href="javascript:void(0)">จำนวนลูกค้า</a></h4>
-                <h1><?= $stats->num_cus ?></h1>
+                <h4><a href="javascript:void(0)">จำนวนสถานะที่รอตรวจสอบ</a></h4>
+                <h1><?= $stats->num_status1 ?></h1>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
             <div class="icon-box w-100">
                 <div class="icon"><i class="bi bi-person-badge"></i></div>
-                <h4><a href="javascript:void(0)">จำนวนผู้ดูแลระบบ</a></h4>
-                <h1><?= $stats->num_admin ?></h1>
+                <h4><a href="javascript:void(0)">จำนวนสถานะที่รออนุมัติ</a></h4>
+                <h1><?= $stats->num_status3 ?></h1>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
             <div class="icon-box w-100">
                 <div class="icon"><i class="bx bx-money"></i></div>
-                <h4><a href="javascript:void(0)">รายได้</a></h4>
-                <h1>+<?= number_format($stats->income,2) ?></h1>
+                <h4><a href="javascript:void(0)">จำนวนห้องพักที่ว่าง (วันนี้)</a></h4>
+                <h1><?= $stats->num_free_room ?></h1>
             </div>
         </div>
     </div>
@@ -65,7 +65,7 @@
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="status4-tab" data-bs-toggle="tab" href="#status4" role="tab" aria-controls="status4" aria-selected="false">
                         <span class="badge bg-light text-dark position-relative">
-                            รอเช็คอิน
+                            สำเร็จ
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">
                                 <?= count($books_status4) ?>
                             </span>
@@ -75,29 +75,9 @@
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" id="status5-tab" data-bs-toggle="tab" href="#status5" role="tab" aria-controls="status5" aria-selected="false">
                         <span class="badge bg-light text-dark position-relative">
-                            อยู่ระหว่างการเช็คอิน
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                                <?= count($books_status5) ?>
-                            </span>
-                        </span>
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="status6-tab" data-bs-toggle="tab" href="#status6" role="tab" aria-controls="status6" aria-selected="false">
-                        <span class="badge bg-light text-dark position-relative">
-                            เช็คเอาท์เรียบร้อย
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                                <?= count($books_status6) ?>
-                            </span>
-                        </span>
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="status7-tab" data-bs-toggle="tab" href="#status7" role="tab" aria-controls="status7" aria-selected="false">
-                        <span class="badge bg-light text-dark position-relative">
                             ไม่อนุมัติ
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                <?= count($books_status7) ?>
+                                <?= count($books_status5) ?>
                             </span>
                         </span>
                     </a>
@@ -114,7 +94,7 @@
                                     <th>หมายเลขจอง</th>
                                     <th>ลูกค้า</th>
                                     <th>เช็คอิน-เช็คเอาท์</th>
-                                    <th>อนุมัติ</th>
+                                    <th>เลือกห้องพัก</th>
                                     <th>ไม่อนุมัติ</th>
                                 </tr>
                             </thead>
@@ -136,7 +116,7 @@
                                         </td>
                                         <td><?= $book['b_daterange'] ?></td>
                                         <td>
-                                            <button class="btn btn-success" onclick="approve('<?= $book['b_id'] ?>')">อนุมัติ</button>
+                                            <button class="btn btn-success" onclick="selectRoom('<?= $book['b_id'] ?>','<?= $book['b_rt_id'] ?>','<?= $book['b_check_in'] ?>','<?= $book['b_check_out'] ?>')">เลือก</button>
                                         </td>
                                         <td>
                                             <button class="btn btn-danger" onclick="disApprove('<?= $book['b_id'] ?>')">ไม่อนุมัติ</button>
@@ -262,8 +242,6 @@
                                     <th>หมายเลขจอง</th>
                                     <th>ลูกค้า</th>
                                     <th>เช็คอิน-เช็คเอาท์</th>
-                                    <th>เช็คอิน</th>
-                                    <th>ยกเลิก</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -283,12 +261,6 @@
                                             </button>
                                         </td>
                                         <td><?= $book['b_daterange'] ?></td>
-                                        <td>
-                                            <button class="btn btn-success" onclick="checkIn('<?= $book['b_id'] ?>')">เช็คอิน</button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger" onclick="disApprove('<?= $book['b_id'] ?>')">ยกเลิก</button>
-                                        </td>
                                     </tr>
                                 <?php } ?>
                             </tbody>
@@ -305,102 +277,11 @@
                                     <th>หมายเลขจอง</th>
                                     <th>ลูกค้า</th>
                                     <th>เช็คอิน-เช็คเอาท์</th>
-                                    <th>เช็คเอาท์</th>
-                                    <th>ยกเลิก</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($books_status5 as $book) { ?>
-                                    <tr>
-                                        <td><?= $book['b_date'] ?></td>
-                                        <td>
-                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
-                                                <?= $book['b_id'] ?>
-                                                <i class="bi bi-eye-fill"></i>
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
-                                                <?= $book['b_cus_username'] ?>
-                                                <i class="bi bi-eye-fill"></i>
-                                            </button>
-                                        </td>
-                                        <td><?= $book['b_daterange'] ?></td>
-                                        <td>
-                                            <button class="btn btn-secondary" onclick="checkOut('<?= $book['b_id'] ?>')">เช็คเอาท์</button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-danger" onclick="disApprove('<?= $book['b_id'] ?>')">ยกเลิก</button>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="status6" role="tabpanel" aria-labelledby="status6-tab">
-                    <br><br>
-                    <?php $net = 0; ?>
-                    <div class="table-responsive">
-                        <table class="table table-striped text-center dataTable">
-                            <thead>
-                                <tr>
-                                    <th>วันที่</th>
-                                    <th>หมายเลขจอง</th>
-                                    <th>ลูกค้า</th>
-                                    <th>เช็คอิน-เช็คเอาท์</th>
-                                    <th>รายได้ (บาท)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($books_status6 as $book) { ?>
-                                    <?php $net += $book['b_cost'] ?>
-                                    <tr>
-                                        <td><?= $book['b_date'] ?></td>
-                                        <td>
-                                            <button class="btn btn-outline-danger" onclick="viewBookDetail('<?= $book['b_id'] ?>')">
-                                                <?= $book['b_id'] ?>
-                                                <i class="bi bi-eye-fill"></i>
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-outline-primary" onclick="viewCusDetail('<?= $book['b_cus_username'] ?>')">
-                                                <?= $book['b_cus_username'] ?>
-                                                <i class="bi bi-eye-fill"></i>
-                                            </button>
-                                        </td>
-                                        <td><?= $book['b_daterange'] ?></td>
-                                        <td><?= number_format($book['b_cost'], 2) ?></td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <th>รวมสุทธิ</th>
-                                    <td><?= number_format($net, 2) ?></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="status7" role="tabpanel" aria-labelledby="status7-tab">
-                    <br><br>
-                    <div class="table-responsive">
-                        <table class="table table-striped text-center dataTable">
-                            <thead>
-                                <tr>
-                                    <th>วันที่</th>
-                                    <th>หมายเลขจอง</th>
-                                    <th>ลูกค้า</th>
-                                    <th>เช็คอิน-เช็คเอาท์</th>
                                     <th>หมายเหตุ</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($books_status7 as $book) { ?>
+                                <?php foreach ($books_status5 as $book) { ?>
                                     <tr>
                                         <td><?= $book['b_date'] ?></td>
                                         <td>
@@ -427,6 +308,21 @@
         </div>
     </div>
 
+    <!-- Room List Modal -->
+    <div class="modal fade" id="roomListModal" tabindex="-1" aria-labelledby="roomListModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="roomListModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-body" id="showRoomList">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Book Detail Modal -->
     <div class="modal fade" id="bookDetailModal" tabindex="-1" aria-labelledby="bookDetailModalLabel" aria-hidden="true">
