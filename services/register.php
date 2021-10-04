@@ -1,10 +1,11 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == "POST") { //เช็ครีเควสจากฝั่ง Client ที่ส่งมาว่าเป็น POST หรือไม่?
 
-    header("Content-Type:application/json");
-    require_once('connect.php');
+    header("Content-Type:application/json"); //ตั้ง header content-type เป็น application/json
+    require_once('connect.php'); //include ไฟล์ connect.php สำหรับติดต่อฐานข้อมูล
 
+    /* เช็คค่าในตัวแปร $_POST[cus_username] ว่ามีค่าตามเงื่อนไขดังกล่าวหรือเปล่า ถ้ามีให้แจ้งเตือนกลับไปหา Client */
     if (str_contains($_POST['cus_username'], 'admin') || str_contains($_POST['cus_username'], 'owner') || str_contains($_POST['cus_username'], 'founder')) {
         http_response_code(412);
         echo json_encode(['status' => 412, 'message' => "ไม่สามารถใช้ชื่อ $_POST[cus_username] ได้ กรุณาเปลี่ยนใหม่"]);
@@ -29,10 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             } else {
                 $password = password_hash($_POST['cus_password'], PASSWORD_DEFAULT);
 
-                if($_POST['cus_gender']=='ชาย'){
-                    $profile = 'avatar_male.JPG';
+                if($_POST['cus_gender']=='ชาย'){ 
+                    $profile = 'avatar_male.JPG'; //เพศชายใช้ไฟล์ภาพ avatar_male.jpg
                 }else{
-                    $profile = 'avatar_female.JPG';
+                    $profile = 'avatar_female.JPG'; //เพศหญิงใช้ไฟล์ภาพ avatar_female.jpg
                 }
 
                 $sql = "INSERT INTO customers (cus_username,cus_password,cus_firstname,cus_lastname,cus_gender,cus_email,cus_address,cus_phone,cus_profile) VALUES (:username,:password,:firstname,:lastname,:gender,:email,:address,:phone,:profile)";
